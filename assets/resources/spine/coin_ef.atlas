@@ -1,0 +1,76 @@
+
+coin_ef.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+fish_jinbi_0
+  rotate: false
+  xy: 477, 114
+  size: 150, 156
+  orig: 160, 160
+  offset: 5, 2
+  index: -1
+fish_jinbi_1
+  rotate: false
+  xy: 368, 111
+  size: 108, 159
+  orig: 160, 160
+  offset: 26, 0
+  index: -1
+fish_jinbi_2
+  rotate: false
+  xy: 63, 4
+  size: 58, 160
+  orig: 160, 160
+  offset: 54, 0
+  index: -1
+fish_jinbi_3
+  rotate: false
+  xy: 1, 4
+  size: 61, 160
+  orig: 160, 160
+  offset: 54, 0
+  index: -1
+fish_jinbi_4
+  rotate: true
+  xy: 368, 3
+  size: 107, 158
+  orig: 160, 160
+  offset: 26, 0
+  index: -1
+yuboombowen1
+  rotate: false
+  xy: 308, 271
+  size: 236, 236
+  orig: 256, 256
+  offset: 8, 12
+  index: -1
+yuboombowen2
+  rotate: false
+  xy: 67, 251
+  size: 240, 256
+  orig: 256, 256
+  offset: 8, 0
+  index: -1
+yuboombowen3
+  rotate: false
+  xy: 122, 1
+  size: 245, 249
+  orig: 256, 256
+  offset: 11, 7
+  index: -1
+yuboomgc0
+  rotate: true
+  xy: 1, 165
+  size: 342, 65
+  orig: 346, 65
+  offset: 1, 0
+  index: -1
+yuboomgq
+  rotate: false
+  xy: 545, 372
+  size: 135, 135
+  orig: 147, 147
+  offset: 6, 6
+  index: -1

@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>frames</key>
+		<dict>
+			<key>carStandPlist/s1.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,0},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s10.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,290},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s11.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{0,580},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s12.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{290,0},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s2.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{290,290},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s3.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{290,580},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s4.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{580,0},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s5.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{580,290},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s6.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{580,580},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s7.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{870,0},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s8.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{870,290},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+			<key>carStandPlist/s9.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{870,580},{290,290}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{290,290}</string>
+			</dict>
+		</dict>
+		<key>metadata</key>
+		<dict>
+			<key>format</key>
+			<integer>2</integer>
+			<key>textureFileName</key>
+			<string>carStantPlist.png</string>
+			<key>realTextureFileName</key>
+			<string>carStantPlist.png</string>
+			<key>size</key>
+			<string>{1160,870}</string>
+		</dict>
+		<key>texture</key>
+		<dict>
+			<key>width</key>
+			<integer>1160</integer>
+			<key>height</key>
+			<integer>870</integer>
+		</dict>
+	</dict>
+</plist>

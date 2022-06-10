@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "7b7aa996-f01a-44c2-a20c-dde5a1686a44",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 290,
+  "height": 82,
+  "platformSettings": {},
+  "subMetas": {
+    "btn_Grow fruit02@2x": {
+      "ver": "1.0.6",
+      "uuid": "73a6cc78-7eeb-4778-aa2b-b90b31b9543d",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "7b7aa996-f01a-44c2-a20c-dde5a1686a44",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 290,
+      "height": 82,
+      "rawWidth": 290,
+      "rawHeight": 82,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

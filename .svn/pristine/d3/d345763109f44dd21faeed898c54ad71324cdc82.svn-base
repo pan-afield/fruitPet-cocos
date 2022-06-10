@@ -1,0 +1,47 @@
+import App from "../manager/App";
+const {ccclass, property} = cc._decorator;
+
+@ccclass
+export default class FishAudio extends cc.Component {
+    @property({
+        type: cc.AudioClip
+    })
+    customAudio: cc.AudioClip[] = [];//批量自定义
+
+    @property({
+        type: cc.AudioClip
+    })
+    backGround: cc.AudioClip = null;//1 背景音乐
+
+    @property({
+        type: cc.AudioClip
+    })
+    attack: cc.AudioClip = null;//  g攻击音效 
+
+    @property({
+        type: cc.AudioClip
+    })
+    hit: cc.AudioClip = null;//  击中怪物 
+
+    @property({
+        type: cc.AudioClip
+    })
+    click: cc.AudioClip = null;//  点击 
+
+    @property({
+        type: cc.AudioClip
+    })
+    openItem: cc.AudioClip = null;//  得到东西 
+
+    start () {
+        // App.audio.updateRes(this);
+        // this.node.removeFromParent();
+        // this.destroy();
+    }
+
+    public setRes(){
+        App.audio.updateRes(this);
+        this.node.removeFromParent();
+        this.destroy();
+    }
+}

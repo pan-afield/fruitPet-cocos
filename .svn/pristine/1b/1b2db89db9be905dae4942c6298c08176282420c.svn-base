@@ -1,0 +1,62 @@
+
+Aperture critical hit.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Divergent
+  rotate: true
+  xy: 314, 49
+  size: 191, 188
+  orig: 200, 200
+  offset: 3, 5
+  index: -1
+aperture01
+  rotate: false
+  xy: 314, 242
+  size: 268, 268
+  orig: 268, 268
+  offset: 0, 0
+  index: -1
+aperture02
+  rotate: false
+  xy: 766, 354
+  size: 156, 156
+  orig: 200, 200
+  offset: 22, 22
+  index: -1
+aperture03
+  rotate: false
+  xy: 2, 122
+  size: 310, 388
+  orig: 310, 388
+  offset: 0, 0
+  index: -1
+fangsheguang_0003
+  rotate: false
+  xy: 584, 330
+  size: 180, 180
+  orig: 186, 186
+  offset: 3, 3
+  index: -1
+fangsheguang_0004
+  rotate: true
+  xy: 504, 50
+  size: 190, 188
+  orig: 192, 190
+  offset: 0, 2
+  index: -1
+wdgz-21
+  rotate: false
+  xy: 2, 2
+  size: 118, 118
+  orig: 122, 122
+  offset: 2, 2
+  index: -1
+yuboombowen
+  rotate: false
+  xy: 694, 151
+  size: 177, 177
+  orig: 186, 189
+  offset: 3, 6
+  index: -1

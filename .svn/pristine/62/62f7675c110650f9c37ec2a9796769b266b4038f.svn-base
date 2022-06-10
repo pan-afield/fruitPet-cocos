@@ -1,0 +1,211 @@
+import UIConstant from "../../constant/UIConstant";
+import EventDispatcher from "../../event/EventDispatcher";
+import GameEvent from "../../event/GameEvent";
+import App from "../../manager/App";
+import FramingManager from "../../manager/FramingManager";
+import RES from "../../res/RES";
+import SilentLoader from "../../res/SilentLoader";
+import BaseUI from "../BaseUI";
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class FruitRecordView extends BaseUI {
+    private gameEnd: Boolean
+    private timeX: String
+    private viewContent: cc.Node = null
+    private closeBtn: cc.Node = null
+    protected fruitItem: cc.Node = null
+    protected scrollView: cc.Node = null
+    protected normalView: cc.Node = null
+    protected detailView: cc.Node = null
+    private continueBuy: cc.Node
+    private title: cc.Node
+    private seedsList: cc.Node
+    protected goToHomeBtn: cc.Node;
+    private totalAward: Number = 0;
+    protected fruitList = []
+    protected validateUI(): void {
+        
+        this.viewContent = this.node.getChildByName('viewContent')
+        this.closeBtn = this.viewContent.getChildByName('popup_close')
+        this.title = this.viewContent.getChildByName('title')
+        this.normalView = this.viewContent.getChildByName('normal')
+        this.detailView = this.viewContent.getChildByName('detail')
+        this.fruitItem = this.normalView.getChildByName('fruitItem')
+        this.scrollView = this.normalView.getChildByName('scrollview').getChildByName('view').getChildByName('content')
+        this.goToHomeBtn = this.normalView.getChildByName("bt_sure")
+        this.continueBuy = this.detailView.getChildByName('total_info').getChildByName('continueBuy')
+    }
+    protected initEvent(): void {
+        this.closeBtn.on('click', this.clickClose, this)
+        this.goToHomeBtn.on("click", this.goToHomeFun, this);
+        this.continueBuy.on("click", this.contiueToBuy, this)
+        EventDispatcher.addListener(GameEvent.UPDATE_PROGRESS, this.updateProgress, this)
+    }
+    protected removeEvent(): void {
+        this.closeBtn.off('click', this.clickClose, this)
+        this.goToHomeBtn.off("click", this.goToHomeFun, this);
+        this.continueBuy.off("click", this.contiueToBuy, this)
+        this.scrollView.children.forEach((item) => {
+            item.off('click', this.checkDetail, this)
+        })
+        EventDispatcher.removeListener(GameEvent.UPDATE_PROGRESS, this.updateProgress, this)
+    }
+    private getHistoryItem(item): void {
+        let fruitItemCopy = cc.instantiate(this.fruitItem)
+        fruitItemCopy.active = true
+        fruitItemCopy.on('click', this.checkDetail, this)
+        let fruitShadow = fruitItemCopy.getChildByName('fruit_shadow')
+        let fruitHadFeed = fruitItemCopy.getChildByName('img_hadfeed')
+        let fruitPic = fruitItemCopy.getChildByName('fruitPic')
+        let fruitTitle = fruitItemCopy.getChildByName('fruitTitle')
+        let fruitNumber = fruitItemCopy.getChildByName('number')
+        let fruitLife = fruitItemCopy.getChildByName('life')
+        let fruitPeriod = fruitItemCopy.getChildByName('period')
+        let fruitBg = fruitItemCopy.getChildByName('fruit_record_bg')
+        let btnCheck = fruitItemCopy.getChildByName('btn_Check')
+        if (item.Status !== 2) {
+            fruitShadow.active = false
+            fruitHadFeed.active = false
+        }
+        if (item.Status === 0) {
+            RES.setSpriteFrame(btnCheck.getComponent(cc.Sprite), 'view/farmRecord/btn_fail')
+            RES.setSpriteFrame(fruitBg.getComponent(cc.Sprite), 'view/farmRecord/bg_fail')
+            fruitTitle.getComponent(cc.Label).string = '枯苗'
+            fruitNumber.getComponent(cc.Label).string = '金币 ---'
+            fruitLife.getComponent(cc.RichText).string = '<color=#D27F14>生命 ---</c>'
+            fruitPeriod.getComponent(cc.Label).string = `${item.Period}号果园`
+            RES.setSpriteFrame(fruitPic.getComponent(cc.Sprite), 'view/farmRecord/status_6')
+        } else if (item.Status === -1) {
+            RES.setSpriteFrame(btnCheck.getComponent(cc.Sprite), 'view/farmRecord/btn_underway')
+            RES.setSpriteFrame(fruitBg.getComponent(cc.Sprite), 'view/farmRecord/bg_underway')
+            fruitTitle.getComponent(cc.Label).string = '未成熟'
+            fruitNumber.getComponent(cc.Label).string = '金币 ---'
+            fruitLife.getComponent(cc.RichText).string = '<color=#D27F14>生命 ---</c>'
+            fruitPeriod.getComponent(cc.Label).string = `${item.Period}号果园`
+            RES.setSpriteFrame(fruitPic.getComponent(cc.Sprite), `common/kindof_one/status_3`)
+        } else {
+            RES.setSpriteFrame(btnCheck.getComponent(cc.Sprite), 'view/farmRecord/btn_Check@2x')
+            RES.setSpriteFrame(fruitBg.getComponent(cc.Sprite), 'view/farmRecord/bg_success')
+            fruitTitle.getComponent(cc.Label).string = item.ResultName
+            fruitNumber.getComponent(cc.Label).string = `金币 ${item.Outstone}`
+            fruitLife.getComponent(cc.RichText).string = `<color=#D27F14>生命</c> <color=#FF7C55>${item.ResultOdds}</color>`
+            fruitPeriod.getComponent(cc.Label).string = `${item.Period}号果园`
+            RES.setSpriteFrame(fruitPic.getComponent(cc.Sprite), `common/fruit/img_fruit_${item.ResultNums}`)
+        }
+        if (item.Status === 1) {
+            this.totalAward = this.totalAward + item.Outstone
+        }
+        this.scrollView.addChild(fruitItemCopy)
+    }
+    protected getUserHistory(): void {
+        let onSuccess = (res) => {
+            this.scrollView.removeAllChildren()
+            this.fruitList = res.List
+            FramingManager.updateRecordList(res.List, this.getHistoryItem, this)
+            let fruitTotal = this.normalView.getChildByName('fruit_record_hint').getChildByName('fruitText')
+            if (this.totalAward == 0) {
+                fruitTotal.getComponent(cc.RichText).string = `<color=#9F7217>当前无可喂养的水果</c>`
+            } else {
+                fruitTotal.getComponent(cc.RichText).string = `<color=#9F7217>喂养全部成熟蔬果可获赠<color=#ED5B26>${this.totalAward}</color>金币</c>`
+            }
+        }
+        App.GameProxy.userHistory({ onSuccess: onSuccess, data: { page: 1, pagesize: 30 } })
+    }
+    private toDouble(num: number) {
+        return num >= 10 ? num : "0" + num;
+    }
+    protected updateProgress(data) {
+        let toTime: string = ""
+        if (data.Gameinfo.Countdown > 60) {
+            toTime = this.toDouble(Math.floor(data.Gameinfo.Countdown / 60)) + "分" + this.toDouble(data.Gameinfo.Countdown % 60) + "秒"
+        } else {
+            toTime = data.Gameinfo.Countdown + "秒";
+        }
+        this.timeX = toTime
+        if (!this.gameEnd) {
+            let attackInfo = this.detailView.getChildByName('attack_info').getChildByName('text')
+            attackInfo.getComponent(cc.RichText).string = `<color=#A3894C>前方危险！野猪还有${this.timeX}入侵！</c>`
+        }
+    }
+    //查看详情
+    protected checkDetail(event) {
+        this.title.getComponent(cc.Label).string = '种植详情'
+        this.normalView.active = false
+        this.detailView.active = true
+        this.scrollView.children.forEach((item, index) => {
+            if (event.node === item) {
+                this.fruitList.forEach((items, indexs) => {
+                    if (index === indexs) {
+                        let termid = items.Termid
+                        let onSuccess = (res) => {
+                            this.gameEnd = res.GameEnd
+                            this.seedsList = res.Seeds
+                            let attackInfo = this.detailView.getChildByName('attack_info').getChildByName('text')
+                            let attackFruit = this.detailView.getChildByName('attack_info').getChildByName('img_wildpig')
+                            if (!res.GameEnd) {
+                                attackInfo.getComponent(cc.RichText).string = `<color=#A3894C>前方危险！野猪还有${this.timeX}入侵！</c>`
+                                // 前方危险！野猪还有X分X秒入侵！
+                                RES.setSpriteFrame(attackFruit.getComponent(cc.Sprite), `view/pigAttack/img_wildpig`)
+                            } else {
+                                attackInfo.getComponent(cc.RichText).string = `<color=#A3894C>野猪袭击了<color=#FF7C55>${res.Period}号</color>果园,只有<color=#FF7C55><b>${res.Name}(生命:${items.ResultOdds})</b></color>幸免于难。</c>`
+                                RES.setSpriteFrame(attackFruit.getComponent(cc.Sprite), `common/fruit/img_fruit_${res.Nums}`)
+                            }
+                            let scrollContent = this.detailView.getChildByName('plante_info').getChildByName('scrollview').getChildByName('view').getChildByName('content')
+                            let scrollItem = this.detailView.getChildByName('plante_info').getChildByName('scrollitem')
+                            scrollContent.removeAllChildren()
+                            let totalNumber = 0
+                            res.Seeds.forEach(element => {
+                                let scrollItemCopy = cc.instantiate(scrollItem)
+                                scrollItemCopy.active = true
+                                let littleFruitPic = scrollItemCopy.getChildByName('littleFruit')
+                                let littleFruitName = scrollItemCopy.getChildByName('fruitName')
+                                let littleFruitNums = scrollItemCopy.getChildByName('buyNums')
+                                RES.setSpriteFrame(littleFruitPic.getComponent(cc.Sprite), `common/fruit/img_fruit_${element.Nums}`)
+                                littleFruitName.getComponent(cc.Label).string = element.Name
+                                littleFruitNums.getComponent(cc.Label).string = element.Instone
+                                totalNumber = element.Instone + totalNumber
+                                scrollContent.addChild(scrollItemCopy)
+                            });
+                            let littleFruitTotal = this.detailView.getChildByName('total_info').getChildByName('total_number')
+                            littleFruitTotal.getComponent(cc.Label).string = totalNumber.toString()
+                        }
+                        App.GameProxy.userBuySeedsList({ onSuccess: onSuccess, data: { termid } })
+                    }
+                })
+            }
+        })
+    }
+    //点击关闭
+    protected clickClose() {
+        if (this.normalView.active) {
+            this.close()
+        } else {
+            this.title.getComponent(cc.Label).string = '种植记录'
+            this.normalView.active = true
+            this.detailView.active = false
+        }
+    }
+    protected updateView(): void {
+        this.getUserHistory()
+        this.detailView.active = false
+        this.normalView.active = true
+        // this.timeX = this.data.data.timeX
+    }
+
+    private goToHomeFun() {
+        EventDispatcher.dispatch(GameEvent.GO_TO_MAINSCENE)
+    }
+    private contiueToBuy() {
+        this.close()
+        App.ui.open(UIConstant.BuySeedView, null, {
+            data: {
+                selectFoodList: this.seedsList,
+                num: 0,
+                name: '',
+                continueBuy: true
+            }
+        })
+    }
+}

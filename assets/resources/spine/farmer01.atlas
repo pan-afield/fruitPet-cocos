@@ -1,0 +1,132 @@
+
+farmer01.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_01
+  rotate: true
+  xy: 389, 171
+  size: 71, 119
+  orig: 71, 119
+  offset: 0, 0
+  index: -1
+arm_02
+  rotate: false
+  xy: 398, 51
+  size: 71, 119
+  orig: 71, 119
+  offset: 0, 0
+  index: -1
+body
+  rotate: false
+  xy: 508, 275
+  size: 119, 236
+  orig: 119, 236
+  offset: 0, 0
+  index: -1
+chutou
+  rotate: true
+  xy: 368, 243
+  size: 268, 92
+  orig: 268, 92
+  offset: 0, 0
+  index: -1
+chutou_shader
+  rotate: true
+  xy: 270, 238
+  size: 273, 97
+  orig: 315, 152
+  offset: 24, 33
+  index: -1
+hand01
+  rotate: false
+  xy: 48, 24
+  size: 41, 142
+  orig: 41, 142
+  offset: 0, 0
+  index: -1
+hand02
+  rotate: false
+  xy: 1, 24
+  size: 46, 142
+  orig: 46, 142
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 509, 183
+  size: 88, 91
+  orig: 88, 91
+  offset: 0, 0
+  index: -1
+leg01
+  rotate: true
+  xy: 90, 1
+  size: 42, 60
+  orig: 42, 60
+  offset: 0, 0
+  index: -1
+leg02
+  rotate: false
+  xy: 160, 204
+  size: 109, 307
+  orig: 109, 307
+  offset: 0, 0
+  index: -1
+leg03
+  rotate: true
+  xy: 530, 114
+  size: 68, 58
+  orig: 68, 58
+  offset: 0, 0
+  index: -1
+leg04
+  rotate: true
+  xy: 90, 44
+  size: 122, 307
+  orig: 122, 307
+  offset: 0, 0
+  index: -1
+shadow
+  rotate: true
+  xy: 461, 259
+  size: 252, 46
+  orig: 252, 46
+  offset: 0, 0
+  index: -1
+tu01
+  rotate: true
+  xy: 1, 167
+  size: 344, 158
+  orig: 344, 158
+  offset: 0, 0
+  index: -1
+tu02
+  rotate: true
+  xy: 470, 57
+  size: 113, 59
+  orig: 113, 59
+  offset: 0, 0
+  index: -1
+tu03
+  rotate: false
+  xy: 270, 167
+  size: 118, 70
+  orig: 118, 70
+  offset: 0, 0
+  index: -1
+tu04
+  rotate: true
+  xy: 151, 15
+  size: 28, 23
+  orig: 28, 24
+  offset: 0, 1
+  index: -1
+tu05
+  rotate: true
+  xy: 1, 11
+  size: 12, 9
+  orig: 12, 9
+  offset: 0, 0
+  index: -1

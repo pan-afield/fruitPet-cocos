@@ -1,0 +1,70 @@
+import EventDispatcher from "../../event/EventDispatcher";
+import GameEvent from "../../event/GameEvent";
+import App from "../../manager/App";
+import FramingManager from "../../manager/FramingManager";
+import RES from "../../res/RES";
+import BaseUI from "../BaseUI";
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class FruitBagView extends BaseUI {
+
+    private closeBtn: cc.Node = null;
+    protected scrollContent: cc.Node = null;
+    protected scrollItem: cc.Node = null
+    private viewContent: cc.Node
+    protected bagHint: cc.Node = null
+    protected fruitList: []
+    protected goToHomeBtn: cc.Node;
+    private total: Number = 0;
+
+    protected validateUI(): void {
+        this.viewContent = this.node.getChildByName('viewContent')
+        this.closeBtn = this.viewContent.getChildByName('popup_close')
+        this.scrollItem = this.viewContent.getChildByName('scrollItem')
+        this.scrollContent = this.viewContent.getChildByName('scrollview').getChildByName('view').getChildByName('content')
+        this.bagHint = this.viewContent.getChildByName('bagHint').getChildByName('RichText')
+        this.goToHomeBtn = this.viewContent.getChildByName("bt_sure");
+    }
+    protected updateView(): void {
+        this.getUserFruit()
+    }
+    protected initEvent(): void {
+        this.closeBtn.on(cc.Node.EventType.TOUCH_START, this.close, this)
+        this.goToHomeBtn.on("click", this.goToHomeFun, this);
+    }
+    protected removeEvent(): void {
+        this.closeBtn.off(cc.Node.EventType.TOUCH_START, this.close, this)
+        this.goToHomeBtn.off("click", this.goToHomeFun, this);
+    }
+    protected getUserFruit(): void {
+        let onSuccess = (res) => {
+            this.fruitList = res.List
+            this.scrollContent.removeAllChildren()
+            FramingManager.updateRecordList(res.List, this.getItem, this)
+            if (this.total === 0) {
+                this.bagHint.getComponent(cc.RichText).string = `<color=#9F7217>当前无可喂养的水果</c>`
+            } else {
+                this.bagHint.getComponent(cc.RichText).string = `<color=#9F7217>喂养全部成熟蔬果预计可获赠<color=#ED5B26>${this.total}</color>金币</c>`
+            }
+        }
+        App.GameProxy.userHistoryAll({ onSuccess: onSuccess })
+    }
+    private getItem(element) {
+        this.total = element.Outstone + this.total
+        let scrollItemCopy = cc.instantiate(this.scrollItem)
+        let title = scrollItemCopy.getChildByName('fruitName')
+        let pic = scrollItemCopy.getChildByName('fruitPic')
+        let price = scrollItemCopy.getChildByName('price')
+        title.getComponent(cc.Label).string = `${element.Period}号果园`
+        RES.setSpriteFrame(pic.getComponent(cc.Sprite), `common/fruit/img_fruit_${element.Nums}`)
+        price.getComponent(cc.Label).string = element.Outstone
+        scrollItemCopy.active = true
+        this.scrollContent.addChild(scrollItemCopy)
+    }
+
+    private goToHomeFun() {
+        EventDispatcher.dispatch(GameEvent.GO_TO_MAINSCENE);
+    }
+}

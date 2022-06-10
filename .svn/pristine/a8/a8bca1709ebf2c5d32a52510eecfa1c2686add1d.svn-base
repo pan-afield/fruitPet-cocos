@@ -1,0 +1,636 @@
+import GameAudio from "../audioManger/GameAudio";
+import Config from "../config/config";
+import GameConst from "../constant/GameConst";
+import UIConstant from "../constant/UIConstant";
+import EventDispatcher from "../event/EventDispatcher";
+import GameEvent from "../event/GameEvent";
+import StorageProvider from "../localStorage/StorageProvider";
+import AnimeManager from "../manager/AnimeManager";
+import App from "../manager/App";
+import ConfigManager from "../manager/ConfigManager";
+import MessageBoxManager from "../manager/MessageBoxManager";
+import RES from "../res/RES";
+import SilentLoader from "../res/SilentLoader";
+import UIUtil from "../util/UIUtil";
+import AlertDialog from "../view/dialog/AlertDialog";
+import Toast from "../view/dialog/Toast";
+import ToastTip from "../view/dialog/ToastTip";
+import BaseScene from "./BaseScene";
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class mainScene extends BaseScene {
+    private experienceLevel: cc.Node
+    private car: cc.Node;
+    private cat: cc.Node;
+    private coin: cc.Label;
+    private giftCoupon: cc.Label;
+    private carLv: cc.Label;
+    private scrollItem: cc.Node;
+    private scrollContent: cc.Node;
+    private giftItem: cc.Node;
+    private giftContent: cc.Node;
+    private carGiftPos: Array<cc.Vec2> = [cc.v2(-183, -200), cc.v2(-256, -57), cc.v2(-180, 137), cc.v2(-30, 261), cc.v2(155, 70)];
+    private foodScroll: cc.Node;
+    private foodItem: cc.Node;
+    private actionView: cc.Node;
+    private actionIcon: cc.Node;
+    private tipView: cc.Node;
+    private eatActionFlag: boolean = true;
+    private feedBackInfo = null;
+    private closeTipViewBtn: cc.Node;
+    private keyFeedBtn: cc.Node;
+    private user: cc.Node;
+    private gold: cc.Node;
+    private gift: cc.Node;
+    private strategyBtn: cc.Node = null;
+    private convertBtn: cc.Node = null
+    private addCoinBtn: cc.Node = null
+    private farmBtn: cc.Node;
+    private userHead: cc.Sprite;
+    private shareBtn: cc.Node;
+    private carTalk: cc.Node;
+    private carBowl: cc.Node
+    private addGoldText: cc.Node;
+    private critInfo: cc.Node;
+    private coinEf: sp.Skeleton;
+    private sign: cc.Node
+    private petInfoPass = { level: Number, process: Number, name: String, giftcouponout: Number }
+
+    protected validateUI(): void {
+        this.sign = this.node.getChildByName('sign')
+        this.carTalk = this.node.getChildByName('carTalk')
+        this.carBowl = this.node.getChildByName('img_catbowl')
+        this.addCoinBtn = this.node.getChildByName('icon_add')
+        this.convertBtn = this.node.getChildByName('icon_exchange')
+        this.strategyBtn = this.node.getChildByName('icon_strategy')
+        this.user = this.node.getChildByName('user').getChildByName('img_me')
+        this.experienceLevel = this.node.getChildByName('user').getChildByName('par')
+        this.gold = this.node.getChildByName('gold')
+        this.gift = this.node.getChildByName('gift')
+        this.car = this.node.getChildByName("car");
+        this.coin = this.node.getChildByName("gold").getChildByName("gold_text").getComponent(cc.Label);
+        this.giftCoupon = this.node.getChildByName("gift").getChildByName("gold_text").getComponent(cc.Label);
+        this.carLv = this.node.getChildByName("user").getChildByName("lv").getComponent(cc.Label);
+        this.scrollItem = this.node.getChildByName("scrollItem");
+        this.scrollContent = this.node.getChildByName("scrollList").getChildByName("mask").getChildByName("content").getChildByName("content");
+        this.giftContent = this.node.getChildByName("giftList");
+        this.giftItem = this.node.getChildByName("bubble");
+        this.foodScroll = this.node.getChildByName("scrollView").getChildByName("view").getChildByName("content");
+        this.foodItem = this.node.getChildByName("item");
+        this.actionView = this.node.getChildByName("actionView");
+        this.actionIcon = this.node.getChildByName("actionIcon");
+        this.tipView = this.node.getChildByName("tipView");
+        this.closeTipViewBtn = this.tipView.getChildByName("bt_sure");
+        this.keyFeedBtn = this.node.getChildByName("bt_feed");
+        this.farmBtn = this.node.getChildByName("icon_garden");
+        this.userHead = this.node.getChildByName("user").getChildByName("mask").getChildByName("head").getComponent(cc.Sprite);
+        this.shareBtn = this.node.getChildByName("icon_wechat_share")
+        this.addGoldText = this.node.getChildByName("addGoldText");
+        this.cat = this.node.getChildByName("cat");
+        this.coinEf = this.node.getChildByName("coin_ef").getComponent(sp.Skeleton);
+        this.critInfo = this.node.getChildByName("crit");
+        this.onWindowResize();
+        this.initGame();
+    }
+
+    protected initEvent(): void {
+        this.car.on('click', this.clickCar, this)
+        this.experienceLevel.on('click', this.openExperience, this)
+        this.carBowl.on('click', this.clickBowl, this)
+        this.convertBtn.on('click', this.openConvert, this)
+        this.addCoinBtn.on('click', this.openRecharge, this)
+        this.strategyBtn.on('click', this.openStrategy, this)
+        this.gift.on('click', this.openGiftRecord, this)
+        this.gold.on("click", this.openCoinRecord, this)
+        this.user.on("click", this.openUserInfoView, this)
+        this.sign.on("click", this.openSign, this)
+        this.closeTipViewBtn.on("click", this.BtnEvent, this);
+        this.keyFeedBtn.on("click", this.BtnEvent, this);
+        this.farmBtn.on("click", this.BtnEvent, this);
+        this.shareBtn.on("click", this.shareMsg, this);
+        EventDispatcher.addListener(GameEvent.GO_TO_FRAMSCENE, this.enterFarmScene, this);
+        EventDispatcher.addListener(GameEvent.UPDATE_USER_INFO, this.getUserInfo, this);
+    }
+
+    protected removeEvent(): void {
+        this.car.off('click', this.clickCar, this)
+        this.sign.off("click", this.openSign, this)
+        this.experienceLevel.off('click', this.openExperience, this)
+        this.carBowl.off('click', this.clickBowl, this)
+        this.convertBtn.off('click', this.openConvert, this)
+        this.addCoinBtn.off('click', this.openRecharge, this)
+        this.strategyBtn.off('click', this.openStrategy, this)
+        this.gift.off('click', this.openGiftRecord, this)
+        this.gold.off("click", this.openCoinRecord, this)
+        this.user.off("click", this.openUserInfoView, this)
+        this.closeTipViewBtn.off("click", this.BtnEvent, this);
+        this.keyFeedBtn.off("click", this.BtnEvent, this);
+        this.farmBtn.off("click", this.BtnEvent, this);
+        this.shareBtn.off("click", this.shareMsg, this);
+        EventDispatcher.removeListener(GameEvent.GO_TO_FRAMSCENE, this.enterFarmScene, this);
+        EventDispatcher.removeListener(GameEvent.UPDATE_USER_INFO, this.getUserInfo, this);
+    }
+    protected initFinish(): void {
+        this.playStandAin();
+    }
+
+    private initGame() {
+        // App.ui.open(UIConstant.NewPeopleView) //新人弹窗
+        this.getUserInfo();
+        this.getPetInfo();
+        this.userHistoryAll();
+    }
+    //签到
+    private openSign() {
+        App.ui.open(UIConstant.SignView)
+    }
+    //经验等级
+    private openExperience() {
+        App.PetProxy.petInfo({
+            onSuccess: (res) => {
+                this.petInfoPass = res.pet
+                App.ui.open(UIConstant.UserLevelView, null, { data: this.petInfoPass })
+            },
+            thisObj: this
+        })
+    }
+    //兑换
+    private openConvert() {
+        App.ui.open(UIConstant.ConvertView)
+    }
+    //充值
+    private openRecharge() {
+        App.ui.open(UIConstant.RechargeView)
+    }
+    //攻略
+    private openStrategy() {
+        App.ui.open(UIConstant.StrategyView)
+    }
+    //礼券记录
+    private openGiftRecord() {
+        App.ui.open(UIConstant.GiftRecordView)
+    }
+    // 打开个人信息 
+    private openUserInfoView() {
+        App.ui.open(UIConstant.UserInfoView)
+    }
+    //金币记录
+    private openCoinRecord() {
+        App.ui.open(UIConstant.CoinRecordView)
+    }
+    /**
+     * 获取用户消息
+     */
+    private getUserInfo() {
+        App.UserProxy.getUserInfo({
+            onSuccess: this.getUserInfoMsg,
+            thisObj: this
+        })
+    }
+
+    /**
+     * 获取宠物消息
+     * 
+     */
+    private getPetInfo() {
+        App.PetProxy.petInfo({
+            onSuccess: this.getPetInfoMsg,
+            thisObj: this
+        })
+    }
+
+    /**
+     * 历史记录
+     * 
+     */
+    private userHistoryAll() {
+        App.GameProxy.userHistoryAll({
+            onSuccess: this.userHistoryAllMsg,
+            thisObj: this
+        })
+    }
+    /**
+     *  用户消息返回
+     */
+    private getUserInfoMsg(data) {
+        console.log("用户消息", data);
+        this.coin.string = data.coin;
+        this.giftCoupon.string = data.giftcoupon;
+        RES.loadHead(data.userinfo.headimg, this.userHead);
+    }
+
+    private playStandAin() {
+        this.cat.getComponent(sp.Skeleton).setAnimation(0, "standby", true);
+    }
+
+    private getPetInfoMsg(data) {
+        console.log("宠物消息", data);
+        this.carLv.string = `Lv:${data.pet.level}`;
+        this.scrollContent.removeAllChildren();
+        let length = data.clamelogs.length > 10 ? 10 : data.clamelogs.length;
+        for (let i = 0; i < length; i++) {
+            let nData = data.clamelogs[i];
+            let node = cc.instantiate(this.scrollItem);
+            let head = node.getChildByName("mask").getChildByName("head").getComponent(cc.Sprite);
+            node.parent = this.scrollContent;
+            if (nData.type === 3) {
+                node.getChildByName("msg").getComponent(cc.Label).string = `${nData.nick} 刚刚喂养宠物获得${nData.nums}金币`;
+            } else if (nData.type === 1) {
+                node.getChildByName("msg").getComponent(cc.Label).string = `可喜可贺，恭喜${nData.nick}获得${nData.nums}礼券`;
+            } else {
+                node.getChildByName("msg").getComponent(cc.Label).string = `可喜可贺，恭喜${nData.nick}获得${nData.nums}金币`;
+            }
+            RES.loadHead(nData.headimg, head);
+            node.active = true;
+
+            if (i == length - 1) {
+                let self = this;
+                let j = 1;
+                let action = cc.sequence(cc.moveBy(1, 0, j * 56), cc.delayTime(2), cc.callFunc(function () {
+                    // console.log("j",j)
+                    if (j == length - 1) {
+                        j = 1;
+                        self.scrollContent.parent.setPosition(0, 28);
+                    } else {
+                        j++;
+                    }
+                }.bind(this))).repeatForever();
+                this.scrollContent.parent.runAction(action);
+                console.log("开始滚动")
+            }
+        }
+        if (data.rewards && data.rewards.length > 0) {
+            for (let i = 0; i < data.rewards.length; i++) {
+                let nDate = data.rewards[i];
+                let node = cc.instantiate(this.giftItem);
+                let icon = node.getChildByName("icon").getComponent(cc.Sprite);
+                node.setPosition(this.carGiftPos[i]);
+                node.parent = this.giftContent;
+                RES.setSpriteFrame(icon, `common/mainScene/t${nDate.type}`);
+                node["nData"] = nDate;
+                node.off("click", this.getReward, this);
+                node.on("click", this.getReward, this);
+                node.active = true;
+            }
+        }
+    }
+
+    private getReward(evt: cc.Button) {
+        let node = evt.target || evt.node;
+        let data = node["nData"];
+        if (!data) return;
+        console.log("data", data);
+        let callback = function (data) {
+            console.log("data", data);
+            let pos = this.giftCoupon.node.parent.getPosition();
+            let starPos = node.getPosition();
+            node.getComponent(cc.Animation).stop();
+            this.moveAction(node, starPos, pos, () => {
+                this.addGoldFun(data.nums, this.giftCoupon.node)
+                this.getUserInfo()
+            });
+
+        }
+        App.PetProxy.getReward({
+            onSuccess: callback,
+            thisObj: this,
+            rewardid: data.rid
+        })
+    }
+
+    private BtnEvent(_target: cc.Button) {
+        // App.gdata.playBtnClickMusic(); 
+        App.audio.playEffectByName("click");
+        switch (_target.node.uuid) {
+            case this.closeTipViewBtn.uuid:
+                this.tipView.active = false;
+                break;
+            case this.keyFeedBtn.uuid:
+
+                // this.feedBackInfo = {odd:10}
+                // this.eatAction();
+                // return;
+                this.keyFeedMsg();
+                break;
+            case this.farmBtn.uuid:
+                this.enterFarmScene();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 
+     * @param node 
+     * @param pos 
+     * @param callback 
+     */
+    private moveAction(node: cc.Node, startPos: cc.Vec2, endPos: cc.Vec2, callback?) {
+        let bezier: cc.Vec2[] = [
+            cc.v2(startPos.x, startPos.y),
+            cc.v2((endPos.x + startPos.x) / 2 - 300, endPos.y + 300),
+            cc.v2(endPos.x, endPos.y)
+        ];
+        let bezierAction = cc.bezierTo(1, bezier);
+        let action = cc.sequence(cc.spawn(
+            bezierAction,
+            cc.scaleTo(1, 0.5)
+        ), cc.callFunc(function () {
+            node.destroy();
+            node.removeFromParent();
+            callback && callback.apply(this);
+        }.bind(this))).easing(cc.easeIn(2));
+
+        node.runAction(action);
+    }
+
+    /**
+     * 喂养历史返回
+     */
+    private userHistoryAllMsg(data) {
+        console.log("data", data);
+        this.node.getChildByName("tip").active = data.total == 0 ? true : false;
+        this.foodScroll.removeAllChildren();
+        for (let i = 0; i < data.List.length; i++) {
+            let nData = data.List[i];
+            let node = cc.instantiate(this.foodItem);
+            let icon = node.getChildByName("icon").getComponent(cc.Sprite);
+            let count = node.getChildByName("count").getComponent(cc.Label);
+            RES.setSpriteFrame(icon, `common/fruit/img_fruit_${nData.Nums}`);
+            node.parent = this.foodScroll;
+            count.string = nData.Outstone;
+            node["data"] = nData;
+            node.off("click", this.feedInfo, this);
+            node.on("click", this.feedInfo, this);
+            node.active = true;
+        }
+    }
+
+    /**
+     * 喂养动画
+     */
+    private feedInfo(evt: cc.Button) {
+
+        let node = evt.target || evt.node;
+        let nData = node["data"];
+        console.log("data", nData);
+        if (!nData) return;
+        if (!this.eatActionFlag) return;
+        App.GameProxy.feed({
+            onSuccess: function (data) {
+                console.log("喂养返回", data);
+                this.eatActionFlag = false;
+                let actionNode = cc.instantiate(this.actionIcon);
+                let icon = actionNode.getComponent(cc.Sprite);
+                let pos = node.getChildByName("icon").convertToWorldSpaceAR(cc.Vec2.ZERO);
+                let posEnd = this.node.getChildByName("img_catbowl").convertToWorldSpaceAR(cc.Vec2.ZERO);
+                actionNode.parent = this.actionView;
+                RES.setSpriteFrame(icon, `common/fruit/img_fruit_${nData.Nums}`);
+                actionNode.setPosition(pos);
+                this.feedBackInfo = data;
+                actionNode.active = true;
+                this.moveAction(actionNode, pos, posEnd, this.eatAction);
+                this.feedTalk()
+            },
+            thisObj: this,
+            termid: nData.Termid
+        })
+    }
+
+    private eatAction() {
+
+
+        let callBack = function () {
+            this.node.getChildByName("img_catbowl").getChildByName("cat_food").active = false;
+
+            if (this.feedBackInfo.Odds > 1) {
+                this.coinEf.node.active = true;
+                this.coinEf.setAnimation(0, "coin_ef", false);
+                this.cat.getComponent(sp.Skeleton).setAnimation(0, "bomb", false);
+                this.cat.getComponent(sp.Skeleton).setEventListener((trackIndex, event) => {
+                    let name = event.data.name;
+                    if (name == "ending") {
+                        this.playStandAin();
+                        this.coinEf.node.active = false;
+                    }
+                    console.log("name", name);
+                });
+
+                // 暴击
+                this.critFun();
+                this.eatEndAction(10);
+
+            } else {
+
+                this.playStandAin();
+                this.eatEndAction(2);
+            }
+            this.eatActionFlag = true;
+
+        }
+        this.node.getChildByName("img_catbowl").getChildByName("cat_food").active = true;
+        this.car.removeAllChildren();
+        this.cat.getComponent(sp.Skeleton).setAnimation(0, "eat", false);
+        this.cat.getComponent(sp.Skeleton).setEventListener((trackIndex, event) => {
+            let name = event.data.name;
+            if (name == "ending") {
+                callBack.apply(this);
+            }
+            console.log("name", name);
+        });
+    }
+
+    private critFun() {
+        let startPos = this.car.convertToWorldSpaceAR(cc.Vec2.ZERO);
+        let node = cc.instantiate(this.critInfo);
+        node.getChildByName("text").getComponent(cc.Label).string = `X${this.feedBackInfo.Odds}B`;
+        node.parent = this.actionView;
+        node.active = true;
+        node.setPosition(startPos);
+        node.opacity = 0;
+        node.setPosition(this.node.position);
+        let callback = cc.callFunc(function () {
+            node.removeFromParent();
+            node.destroy();
+        })
+        node.runAction(cc.sequence(cc.callFunc(function () {
+            node.opacity = 255;
+        }), cc.scaleTo(0.1, 1.3), cc.delayTime(0.5), callback))
+
+    }
+
+    private eatEndAction(num: number = 2) {
+        let endPos0 = this.node.getChildByName("gold").convertToWorldSpaceAR(cc.Vec2.ZERO);
+        let endPos1 = this.node.getChildByName("gift").convertToWorldSpaceAR(cc.Vec2.ZERO);
+        if (Config.gameFlag) {
+            // @ts-ignore
+            wx.vibrateShort()
+        }
+
+        let arr = [
+            {
+                url: "common/mainScene/t0",
+                pos: cc.v2(208, 454),
+                endPos: endPos0
+            },
+            {
+                url: "common/mainScene/t1",
+                pos: cc.v2(531, 458),
+                endPos: endPos1
+            },
+            {
+                url: "common/mainScene/t1",
+                pos: cc.v2(379, 453),
+                endPos: endPos1
+            },
+            {
+                url: "common/mainScene/t1",
+                pos: cc.v2(171, 359),
+                endPos: endPos1
+            },
+            {
+                url: "common/mainScene/t1",
+                pos: cc.v2(340, 354),
+                endPos: endPos1
+            },
+            {
+                url: "common/mainScene/t0",
+                pos: cc.v2(458, 369),
+                endPos: endPos0
+            },
+            {
+                url: "common/mainScene/t0",
+                pos: cc.v2(570, 362),
+                endPos: endPos0
+            },
+            {
+                url: "common/mainScene/t0",
+                pos: cc.v2(226, 272),
+                endPos: endPos0
+            },
+            {
+                url: "common/mainScene/t0",
+                pos: cc.v2(370, 280),
+                endPos: endPos0
+            },
+            {
+                url: "common/mainScene/t1",
+                pos: cc.v2(488, 273),
+                endPos: endPos1
+            },
+        ]
+        let startPos = this.car.convertToWorldSpaceAR(cc.Vec2.ZERO);
+        let callBack = function () {
+            this.getUserInfo();
+            this.tipViewInfo();
+        }
+        for (let i = 0; i < num; i++) {
+            let node = cc.instantiate(this.actionIcon);
+            let icon = node.getComponent(cc.Sprite);
+            RES.setSpriteFrame(icon, arr[i].url);
+            node.opacity = 0;
+            node.scale = 1.8;
+            node.parent = this.actionView;
+            node.active = true;
+            node.setPosition(startPos);
+            node.runAction(cc.sequence(
+                cc.spawn(cc.fadeTo(0.5, 255), cc.moveTo(0.5, arr[i].pos)),
+                cc.delayTime(i * 0.1),
+                cc.callFunc(function () {
+                    if (i == num - 1) {
+                        this.moveAction(node, startPos, arr[i].endPos, callBack);
+                    } else {
+                        this.moveAction(node, startPos, arr[i].endPos);
+                    }
+
+                }.bind(this))
+            ))
+        }
+    }
+
+    private tipViewInfo() {
+        let text: cc.RichText = this.tipView.getChildByName("tip").getComponent(cc.RichText);
+        this.tipView.active = true;
+        text.string = `招财猫吃饱喝足后伸了个懒腰 \n 掉落<color=#FF7C55>${this.feedBackInfo.Coin}</color>金币和<color=#FF7C55>${this.feedBackInfo.GiftCoupon}</color>礼券`;
+        this.userHistoryAll();
+    }
+
+    private keyFeedMsg() {
+        if (!this.eatActionFlag) return;
+        App.GameProxy.feedAll({
+            onSuccess: function (data) {
+                console.log("一键喂养返回消息", data);
+                this.feedBackInfo = data;
+                this.eatAction();
+                this.feedTalk()
+            },
+            thisObj: this
+        })
+    }
+
+    private enterFarmScene() {
+        SilentLoader.canLoad = false;
+        cc.director.loadScene("farmScene", function (e) {
+            console.log("e", e)
+            SilentLoader.canLoad = true;
+        });
+    }
+
+    private shareMsg() {
+
+
+        // this.addGoldFun(10,this.giftCoupon.node)
+        // return;
+        // @ts-ignore
+        wx.shareAppMessage({
+            title: "与萌宠一起享受轻松悠闲的田园时光，还可获赠话费京东卡!",
+            imageUrl: "https://h5.lexun.com/games/miniprogram/cocos/img/share.png",
+        })
+    }
+
+    /**
+     *金币动画
+     */
+    private addGoldFun(num: number, parent: cc.Node) {
+        let node = cc.instantiate(this.addGoldText);
+        node.getComponent(cc.Label).string = "+" + num;
+        node.parent = parent;
+        node.active = true;
+        node.opacity = 0;
+        node.setPosition(parent.position);
+        let callback = cc.callFunc(function () {
+            node.removeFromParent();
+            node.destroy();
+        })
+        node.runAction(cc.sequence(cc.callFunc(function () {
+            node.opacity = 255;
+        }), cc.spawn(
+            cc.moveBy(1, 0, 100),
+            cc.fadeOut(1)
+        ), callback))
+    }
+
+
+    private clickBowl() {
+        let carText = ['主人，我饿了喵!点击背包的水果喂我吧~', '主人，去果园种植，成熟后就可以喂给我啦!', '主人，听说UPS快递可以委托种植所有水果哦~',
+            '主人，隔壁小花说在果园等您一起种水果呢!']
+        let randomNumber = Math.floor(Math.random() * 4)
+        this.carTalk.getComponent(cc.Label).string = carText[randomNumber]
+    }
+    private clickCar() {
+        let carText = ['主人又来陪我玩了，好开心!', '新的一天，更加爱主人!', '看到主人，我现在浑身充满力量! ', '123，我们都是木头人，不许说话不许动。',
+            '我最爱主人了! ', 'HI,主人最近过的怎么样?', '希望我能给主人带来好运', '主人，点击金币和礼券可以查看记录哦~', '主人每天都要开开心心呀!', '主人，每小时我都会送您礼券!多陪陪我吧!',
+            '劳动最光荣，劳动最伟大!', '主人，我会为家里赚更多的金币和礼券的!']
+        let randomNumber = Math.floor(Math.random() * 12)
+        this.carTalk.getComponent(cc.Label).string = carText[randomNumber]
+    }
+    private feedTalk() {
+        let carText = ['谢谢主人!让我给你喵一个吧?喵喵喵~', '我发誓只吃了八成饱，不信你摸摸我肚子。', '从来没有吃过这么多，主人对我真好~', '吃饱了，精神百倍。',
+            '哇，太美味了，你对我真好!!', '吃饱了才有力气减肥，主人你说对不对', '吃饱饱，才能给主人赚币币!']
+        let randomNumber = Math.floor(Math.random() * 7)
+        this.carTalk.getComponent(cc.Label).string = carText[randomNumber]
+    }
+}

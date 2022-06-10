@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "6840c05b-20c2-4c29-82ec-07a99dec2d5a",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 144,
+  "height": 160,
+  "platformSettings": {},
+  "subMetas": {
+    "daySign_icon": {
+      "ver": "1.0.6",
+      "uuid": "8b19a08d-3a20-44d4-98be-2b5d19bb517d",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "6840c05b-20c2-4c29-82ec-07a99dec2d5a",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 144,
+      "height": 160,
+      "rawWidth": 144,
+      "rawHeight": 160,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

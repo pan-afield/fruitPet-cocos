@@ -1,0 +1,63 @@
+import EventDispatcher from "../event/EventDispatcher";
+import RES from "./RES";
+// import EventDispatcher from "../event/EventDispatcher";
+// import LEvent from "../event/LEvent";
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class Resources extends cc.Component {
+
+    @property({
+        type: cc.Asset
+    })
+    /**图片 */
+    // @property(cc.SpriteFrame)
+    // car1: cc.SpriteFrame = null;
+    // @property(cc.SpriteFrame)
+    // car2: cc.SpriteFrame = null;
+    // customRes: cc.Asset[] = [];
+    // @property({type: sp.SkeletonData})
+    // danchou:sp.SkeletonData = null;
+    // @property({type: sp.SkeletonData})
+    // danchouef:sp.SkeletonData = null;
+    // @property({type: sp.SkeletonData})
+    // shilian:sp.SkeletonData = null;
+    //----图集---开始-------
+
+    // LIFE-CYCLE CALLBACKS:
+
+    @property({
+        type:sp.SkeletonData
+    })
+    boss_ef:sp.SkeletonData = null;
+    @property({
+        type:cc.Prefab
+    })
+    LoadingTip:cc.Prefab = null; 
+
+    @property(cc.SpriteAtlas)
+    loginCarPlist: cc.SpriteAtlas = null;
+
+    @property(cc.SpriteAtlas)
+    carStantPlist: cc.SpriteAtlas = null;
+
+    @property(cc.SpriteAtlas)
+    carEatPlist: cc.SpriteAtlas = null;
+    
+    onLoad() { 
+        RES.updateRes(this);
+        // EventDispatcher.dispatch(LEvent.RES_LOAD_COMPLETE, this);
+        this.node.removeFromParent();
+        this.destroy();
+    }
+
+    start() {
+
+    }
+
+    // update (dt) {}
+
+}
+
+

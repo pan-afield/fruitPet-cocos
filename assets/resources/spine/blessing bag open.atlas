@@ -1,0 +1,41 @@
+
+blessing bag open.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Blessing bag01
+  rotate: true
+  xy: 314, 75
+  size: 159, 157
+  orig: 161, 159
+  offset: 1, 1
+  index: -1
+aperture01
+  rotate: false
+  xy: 314, 236
+  size: 258, 258
+  orig: 260, 260
+  offset: 1, 1
+  index: -1
+aperture02
+  rotate: false
+  xy: 2, 106
+  size: 310, 388
+  orig: 312, 390
+  offset: 1, 1
+  index: -1
+base01
+  rotate: false
+  xy: 2, 14
+  size: 166, 90
+  orig: 168, 92
+  offset: 1, 1
+  index: -1
+icon_coupon
+  rotate: false
+  xy: 170, 2
+  size: 138, 102
+  orig: 140, 104
+  offset: 1, 1
+  index: -1

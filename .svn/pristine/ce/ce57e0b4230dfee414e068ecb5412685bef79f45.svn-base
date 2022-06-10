@@ -1,0 +1,227 @@
+// Learn TypeScript:
+//  - https://docs.cocos.com/creator/manual/en/scripting/typescript.html
+// Learn Attribute:
+//  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
+// Learn life-cycle callbacks:
+//  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
+import Config from "../../config/config"
+import App from "../../manager/App";
+import RES from "../../res/RES";
+import UIUtil from "../../util/UIUtil";
+import BaseUI from "../BaseUI";
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class RechargeView extends BaseUI {
+    private rewardCoin: cc.Node
+    private payView: cc.Node;
+    private payViewClose: cc.Node;
+    private catFoods: cc.Node;
+    private foodsPrice: cc.Node;
+    private payBtn: cc.Node;
+    private viewContent: cc.Node = null
+    private userPic: cc.Node = null;
+    private coin: cc.Node = null;
+    private closeBtn: cc.Node;
+    private scrollItem: cc.Node;
+    private scrollContent: cc.Node
+    private gooodsList: []
+    private currentObj;
+    private vipPopup: cc.Node;
+    private closeVipBtn: cc.Node;
+    private leftBtn: cc.Node;
+    private rightBtn: cc.Node;
+    private titleVip: cc.Node
+    private vipContent: cc.Node
+    private vipItem: cc.Node
+    private vipBtn: cc.Node
+    private expProgress: cc.Node
+    private vipLevel: cc.Node
+    private numProgress: cc.Node
+    private catFoodsNum: cc.Node
+    private vipIcon: cc.Node
+    private expTips: cc.Node
+    private levelsDesc: []
+    private crruentLevel: number
+    private changeNum: number
+
+    protected validateUI(): void {
+        this.viewContent = this.node.getChildByName('viewContent')
+        this.closeBtn = this.viewContent.getChildByName('icon_close')
+        this.userPic = this.viewContent.getChildByName('picMask').getChildByName('userPic')
+        this.coin = this.viewContent.getChildByName('coin')
+        this.scrollItem = this.viewContent.getChildByName('scrollItem')
+        this.scrollContent = this.viewContent.getChildByName('scrollview').getChildByName('view').getChildByName('content')
+        this.payView = this.viewContent.getChildByName('payView')
+        this.payViewClose = this.payView.getChildByName('img_Popup').getChildByName('icon_cancel')
+        this.catFoods = this.payView.getChildByName('img_Popup').getChildByName('cats_foods')
+        this.foodsPrice = this.payView.getChildByName('img_Popup').getChildByName('recharge_price')
+        this.payBtn = this.payView.getChildByName('img_Popup').getChildByName('btn_payment')
+        this.rewardCoin = this.payView.getChildByName('img_Popup').getChildByName('rewardCoin')
+        this.vipPopup = this.viewContent.getChildByName('vipPopup')
+        this.vipBtn = this.viewContent.getChildByName('btn_vip')
+        this.closeVipBtn = this.vipPopup.getChildByName('icon_close')
+        this.leftBtn = this.vipPopup.getChildByName('btn_Left')
+        this.rightBtn = this.vipPopup.getChildByName('btn_right')
+        this.titleVip = this.vipPopup.getChildByName('title')
+        this.vipContent = this.vipPopup.getChildByName('vipContent')
+        this.vipItem = this.vipPopup.getChildByName('vipItem')
+        this.expProgress = this.viewContent.getChildByName('progressBar')
+        this.numProgress = this.viewContent.getChildByName('progress')
+        this.catFoodsNum = this.viewContent.getChildByName('catFoods')
+        this.expTips = this.viewContent.getChildByName('expTips')
+        this.vipLevel = this.viewContent.getChildByName('vipLevel').getChildByName('label')
+        this.vipIcon = this.viewContent.getChildByName('vipIcon')
+    }
+    protected updateView(): void {
+        this.getGoodsList()
+        RES.loadHead(App.gdata.userInfo.userinfo.headimg, this.userPic.getComponent(cc.Sprite))
+        this.coin.getComponent(cc.Label).string = App.gdata.userInfo.coin
+    }
+    protected openVipPopup() {
+        this.vipPopup.active = true
+        this.getVipLevel(this.crruentLevel)
+        this.changeNum = this.crruentLevel
+    }
+    protected closeVipPopup() {
+        this.vipPopup.active = false
+    }
+    protected closePayView(): void {
+        this.payView.active = false
+    }
+    protected changeLevel(event) {
+        if (event.node === this.leftBtn) {
+            if (this.changeNum === 0) return
+            this.changeNum--
+        } else if (event.node === this.rightBtn) {
+            if (this.changeNum === 10) return
+            this.changeNum++
+        }
+        this.getVipLevel(this.changeNum)
+    }
+    protected getVipLevel(level) {
+        this.titleVip.getComponent(cc.Label).string = `VIP${level}特权`
+        this.vipContent.removeAllChildren()
+        this.levelsDesc.forEach((item: any) => {
+            if (item.level === level) {
+                item.descriptions.forEach((items) => {
+                    let itemCopy = cc.instantiate(this.vipItem)
+                    itemCopy.getComponent(cc.Label).string = items
+                    itemCopy.active = true
+                    this.vipContent.addChild(itemCopy)
+                })
+            }
+        })
+    }
+    private wxPay(): void {
+        App.GoodsProxy.userPay({
+            onSuccess: (res) => {
+                console.log(res);
+                if (res.Result === 0) {
+                    if (Config.gameFlag) {
+                        // @ts-ignore
+                        wx.requestMidasPayment({
+                            mode: 'game', env: 1, offerId: '',
+                            currencyType: 'CNY',
+                            platform: 'android',
+                            buyQuantity: 10,//购买数量
+                            success: (res) => {
+                                console.log(res);
+
+                            },
+                            fail: (res) => {
+                                console.log(res);
+
+                            },
+                            compelte: (res) => {
+                                console.log(res);
+
+                            }
+                        })
+                    }
+                }
+            }, data: { goodid: this.currentObj.rid }
+        })
+    }
+    private toPay(event): void {
+        this.scrollContent.children.forEach((item, index) => {
+            if (event.node === item) {
+                this.gooodsList.forEach((items: any, indexs) => {
+                    if (index === indexs) {
+                        this.currentObj = items
+                        RES.setSpriteFrame(this.catFoods.getComponent(cc.Sprite), `view/recharge/cats_foods${index + 1}@2x`)
+                        this.foodsPrice.getComponent(cc.Label).string = `￥${items.price}`
+                        this.rewardCoin.getComponent(cc.Label).string = `赠送${UIUtil.toStone(items.coin)}金币`
+                        this.payView.active = true
+                        return
+                    }
+                })
+            }
+        })
+    }
+    protected getGoodsList() {
+        let onSuccess = (res) => {
+            this.levelsDesc = res.levels
+            this.gooodsList = res.list
+            this.crruentLevel = res.levelInfo.level
+            this.expTips.getComponent(cc.Label).string = `再获得${res.levelInfo.needcredits - res.levelInfo.curcredits}经验升级`
+            this.numProgress.getComponent(cc.Label).string = `${res.levelInfo.curcredits}/${res.levelInfo.needcredits}`
+            this.catFoodsNum.getComponent(cc.Label).string = '500'
+            this.vipLevel.getComponent(cc.Label).string = 'VIP' + res.levelInfo.level
+            RES.setSpriteFrame(this.vipIcon.getComponent(cc.Sprite), `common/vip/v${res.levelInfo.level}@2x`)
+            this.expProgress.getComponent(cc.ProgressBar).progress = res.levelInfo.process
+            console.log(this.expProgress.getComponent(cc.ProgressBar).progress);
+            this.scrollContent.removeAllChildren()
+            res.list.forEach((item: any, index) => {
+                let scrollItemCopy = cc.instantiate(this.scrollItem)
+                let vipExp = scrollItemCopy.getChildByName('Vip')
+                let award = scrollItemCopy.getChildByName('award')
+                let price = scrollItemCopy.getChildByName('price')
+                let recommend = scrollItemCopy.getChildByName('goods_icon')
+                let goodsImg = scrollItemCopy.getChildByName('img_goods')
+                let name = scrollItemCopy.getChildByName('goodsName')
+                vipExp.getComponent(cc.Label).string = `VIP经验+${item.credits}`
+                name.getComponent(cc.Label).string = item.name
+                award.getComponent(cc.Label).string = `赠送${UIUtil.toStone(item.coin)}金币`
+                price.getComponent(cc.Label).string = '￥' + item.price
+                RES.loadHead(item.img, goodsImg.getComponent(cc.Sprite))
+                // RES.setSpriteFrame(goodsImg.getComponent(cc.Sprite), `view/recharge/cats_foods${index + 1}@2x`)
+                if (item.name === '新人礼包') recommend.active = true
+                scrollItemCopy.active = true
+                scrollItemCopy.on('click', this.toPay, this)
+                this.scrollContent.addChild(scrollItemCopy)
+            });
+        }
+        App.GoodsProxy.goodsList({ onSuccess, data: { page: 1, pagesize: 10 } })
+    }
+    /**
+* 增加监听事件
+*/
+    protected initEvent(): void {
+        this.closeBtn.on("click", this.close, this);
+        this.payViewClose.on("click", this.closePayView, this);
+        this.payBtn.on("click", this.wxPay, this);
+        this.closeVipBtn.on("click", this.closeVipPopup, this)
+        this.vipBtn.on('click', this.openVipPopup, this)
+        this.leftBtn.on("click", this.changeLevel, this)
+        this.rightBtn.on("click", this.changeLevel, this)
+    }
+
+    /**
+     * 移除监听事件
+     */
+    protected removeEvent(): void {
+        this.leftBtn.off("click", this.changeLevel, this)
+        this.rightBtn.off("click", this.changeLevel, this)
+        this.closeBtn.off("click", this.close, this);
+        this.payViewClose.off("click", this.closePayView, this);
+        this.payBtn.off("click", this.wxPay, this);
+        this.closeVipBtn.off("click", this.closeVipPopup, this)
+        this.vipBtn.off('click', this.openVipPopup, this)
+        this.scrollContent.children.forEach((item) => {
+            item.off('click', this.toPay, this)
+        })
+    }
+
+}

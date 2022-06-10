@@ -1,0 +1,8 @@
+{
+  "engine": "cocos-creator-js",
+  "packages": "packages",
+  "name": "myFruitPet",
+  "id": "b1a7ce13-be19-4248-8ee2-0d5f3afe0e01",
+  "version": "2.4.7",
+  "isNew": false
+}

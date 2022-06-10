@@ -1,0 +1,31 @@
+/**
+ * 事件类型
+ */
+export default class GameEvent {
+	public constructor() {
+	}
+
+	// 更新农场游戏消息
+	public static UPDATA_FARM_GAME_INFO: string = "UPDATA_FARM_GAME_INFO";
+
+	// 下单完成
+	public static PLANT_END: string = "PLANT_END";
+
+
+	// 开始新游戏
+	public static START_NEW_GAME: string = "START_NEW_GAME";
+
+
+	// 跳转主场景
+	public static GO_TO_MAINSCENE: string = "GO_TO_MAINSCENE";
+
+	// 前往农场主场景
+	public static GO_TO_FRAMSCENE: string = "GO_TO_FRAMSCENE";
+	// 进度条
+	public static UPDATE_PROGRESS: string = "UPDATE_PROGRESS";
+	// 买中回调
+	public static GET_BUY_IN: string = "GET_BUY_IN";
+	//更新用户信息
+	public static UPDATE_USER_INFO: string = "UPDATE_USER_INFO";
+	//更新用户信息
+}

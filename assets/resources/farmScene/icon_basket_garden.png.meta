@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "55220b85-64ac-4ee9-9654-359ca1d6c6ee",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 90,
+  "height": 96,
+  "platformSettings": {},
+  "subMetas": {
+    "icon_basket_garden": {
+      "ver": "1.0.6",
+      "uuid": "6465c63f-147b-4385-831b-0e4e0f46a066",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "55220b85-64ac-4ee9-9654-359ca1d6c6ee",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": 0.5,
+      "trimX": 1,
+      "trimY": 0,
+      "width": 89,
+      "height": 95,
+      "rawWidth": 90,
+      "rawHeight": 96,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

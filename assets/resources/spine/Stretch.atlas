@@ -1,0 +1,153 @@
+
+Stretch.png
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 162, 711
+  size: 182, 137
+  orig: 192, 147
+  offset: 3, 8
+  index: -1
+eye_close
+  rotate: false
+  xy: 111, 981
+  size: 67, 28
+  orig: 74, 33
+  offset: 3, 2
+  index: -1
+face
+  rotate: false
+  xy: 804, 823
+  size: 119, 107
+  orig: 125, 112
+  offset: 0, 2
+  index: -1
+fangsheguang_0002
+  rotate: false
+  xy: 96, 864
+  size: 112, 110
+  orig: 128, 128
+  offset: 8, 9
+  index: -1
+glow_0177 #88900
+  rotate: false
+  xy: 795, 601
+  size: 220, 220
+  orig: 256, 256
+  offset: 18, 18
+  index: -1
+jinbi_0
+  rotate: true
+  xy: 346, 698
+  size: 150, 156
+  orig: 160, 160
+  offset: 5, 2
+  index: -1
+jinbi_2
+  rotate: true
+  xy: 421, 951
+  size: 58, 160
+  orig: 160, 160
+  offset: 54, 0
+  index: -1
+jinbi_3
+  rotate: true
+  xy: 583, 948
+  size: 61, 160
+  orig: 160, 160
+  offset: 54, 0
+  index: -1
+jinbi_4
+  rotate: true
+  xy: 2, 755
+  size: 107, 158
+  orig: 160, 160
+  offset: 26, 0
+  index: -1
+light
+  rotate: false
+  xy: 504, 685
+  size: 289, 163
+  orig: 307, 196
+  offset: 9, 0
+  index: -1
+light2
+  rotate: false
+  xy: 567, 259
+  size: 368, 340
+  orig: 371, 340
+  offset: 2, 0
+  index: -1
+light3
+  rotate: false
+  xy: 2, 446
+  size: 563, 237
+  orig: 600, 238
+  offset: 10, 0
+  index: -1
+light6
+  rotate: false
+  xy: 2, 2
+  size: 919, 255
+  orig: 928, 256
+  offset: 4, 1
+  index: -1
+liquan_1
+  rotate: false
+  xy: 838, 932
+  size: 100, 77
+  orig: 100, 108
+  offset: 0, 15
+  index: -1
+liquan_2
+  rotate: true
+  xy: 745, 936
+  size: 73, 91
+  orig: 100, 108
+  offset: 17, 8
+  index: -1
+liquan_3
+  rotate: true
+  xy: 316, 952
+  size: 57, 103
+  orig: 100, 108
+  offset: 23, 4
+  index: -1
+liquan_4
+  rotate: true
+  xy: 2, 983
+  size: 26, 107
+  orig: 100, 108
+  offset: 37, 1
+  index: -1
+liquan_5
+  rotate: true
+  xy: 2, 898
+  size: 83, 92
+  orig: 100, 108
+  offset: 10, 9
+  index: -1
+star
+  rotate: false
+  xy: 180, 976
+  size: 33, 33
+  orig: 34, 34
+  offset: 1, 0
+  index: -1
+tail
+  rotate: true
+  xy: 215, 967
+  size: 42, 99
+  orig: 47, 104
+  offset: 3, 3
+  index: -1
+text
+  rotate: false
+  xy: 210, 850
+  size: 592, 84
+  orig: 594, 84
+  offset: 1, 0
+  index: -1

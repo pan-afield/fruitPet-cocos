@@ -1,0 +1,76 @@
+
+cat.png
+size: 512,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: true
+  xy: 180, 91
+  size: 153, 125
+  orig: 154, 126
+  offset: 0, 1
+  index: -1
+cake
+  rotate: true
+  xy: 348, 136
+  size: 42, 40
+  orig: 42, 42
+  offset: 0, 1
+  index: -1
+eye_L
+  rotate: false
+  xy: 306, 24
+  size: 63, 65
+  orig: 64, 68
+  offset: 0, 2
+  index: -1
+eye_R
+  rotate: false
+  xy: 240, 24
+  size: 64, 65
+  orig: 66, 68
+  offset: 1, 2
+  index: -1
+face
+  rotate: true
+  xy: 2, 2
+  size: 242, 176
+  orig: 242, 176
+  offset: 0, 0
+  index: -1
+hand_L
+  rotate: false
+  xy: 307, 170
+  size: 39, 74
+  orig: 40, 74
+  offset: 1, 0
+  index: -1
+hand_L_stand
+  rotate: false
+  xy: 307, 95
+  size: 39, 73
+  orig: 40, 74
+  offset: 0, 1
+  index: -1
+hand_R
+  rotate: true
+  xy: 180, 15
+  size: 74, 58
+  orig: 74, 58
+  offset: 0, 0
+  index: -1
+mouth
+  rotate: false
+  xy: 348, 100
+  size: 44, 34
+  orig: 44, 34
+  offset: 0, 0
+  index: -1
+tail
+  rotate: true
+  xy: 348, 180
+  size: 64, 40
+  orig: 64, 40
+  offset: 0, 0
+  index: -1

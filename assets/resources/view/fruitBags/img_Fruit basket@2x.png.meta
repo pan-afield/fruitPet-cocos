@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "ad4c4e8a-5e31-4ede-a516-603a0d7d4d0a",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 164,
+  "height": 170,
+  "platformSettings": {},
+  "subMetas": {
+    "img_Fruit basket@2x": {
+      "ver": "1.0.6",
+      "uuid": "02994157-f7c7-4e4a-b8f7-195a4baff492",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "ad4c4e8a-5e31-4ede-a516-603a0d7d4d0a",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 164,
+      "height": 170,
+      "rawWidth": 164,
+      "rawHeight": 170,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

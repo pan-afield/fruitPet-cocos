@@ -1,0 +1,398 @@
+// Learn TypeScript:
+//  - https://docs.cocos.com/creator/manual/en/scripting/typescript.html
+// Learn Attribute:
+//  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
+// Learn life-cycle callbacks:
+//  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
+import BaseScene from "./BaseScene";
+import RES from "../res/RES";
+import App from "../manager/App";
+import UIConstant from "../constant/UIConstant";
+import EventDispatcher from "../event/EventDispatcher";
+import GameEvent from "../event/GameEvent";
+import AnimeManager from "../manager/AnimeManager";
+import SilentLoader from "../res/SilentLoader";
+import Config from "../config/config";
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class farmScene extends BaseScene {
+    private seedNums: cc.Label;
+    private attackHint: cc.RichText;
+    private progressBar: cc.ProgressBar;
+    private timer;
+    public plantState: number = 1;
+    private blockList = {};
+    private plantedFruit: Array<Object> = [];
+    private orchardNumber: cc.RichText;
+    btnOptions: cc.Node = null
+    buySeedBtn: cc.Node = null
+    pigAttackBtn: cc.Node = null
+    fruitRecordBtn: cc.Node = null
+    fruitBagBtn: cc.Node = null
+    private buyBulldeBtn: cc.Node;
+    private scrollContent: cc.Node;
+    private scrollItem: cc.Node;
+    private pigSpine: sp.Skeleton;
+    private farmerSpine: sp.Skeleton;
+    private carBtn: cc.Node;
+    private blockInfo: cc.Node;
+    private smokeList: cc.Node;
+    private imgPlate: cc.Node;
+    private fruitAwards: cc.Node
+    private gameRid;
+    private nextRid;
+
+
+    protected validateUI(): void {
+        if (Config.gameFlag) {
+            // @ts-ignore
+            wx.showShareMenu({
+                withShareTicket: true,
+                menus: ['shareAppMessage', 'shareTimeline']
+            })
+        }
+        let block = this.node.getChildByName("block");
+        block.children.forEach((node: cc.Node, index) => {
+            this.blockList[index] = node;
+        })
+        this.btnOptions = this.node.getChildByName('farmOptions')
+        this.buySeedBtn = this.btnOptions.getChildByName('buySeed')
+        this.pigAttackBtn = this.btnOptions.getChildByName('pigAttack')
+        this.fruitRecordBtn = this.btnOptions.getChildByName('fruitRecord')
+        this.fruitBagBtn = this.btnOptions.getChildByName('fruitBag')
+        this.seedNums = this.node.getChildByName("seedNums").getComponent(cc.Label);
+        this.attackHint = this.node.getChildByName("attackHint").getComponent(cc.RichText);
+        this.orchardNumber = this.node.getChildByName("img_plate").getChildByName("preiods").getComponent(cc.RichText);
+        this.progressBar = this.node.getChildByName("pigProgress").getChildByName("progressBar").getComponent(cc.ProgressBar);
+        this.buyBulldeBtn = this.node.getChildByName("icon_plant");
+        this.scrollContent = this.node.getChildByName("planteInfo").getChildByName("mask").getChildByName("content").getChildByName("content");
+        this.scrollItem = this.node.getChildByName("scrollItem");
+        this.pigSpine = this.node.getChildByName("pig_01").getComponent(sp.Skeleton);
+        this.farmerSpine = this.node.getChildByName("farmer01").getComponent(sp.Skeleton);
+        this.carBtn = this.node.getChildByName("car");
+        this.blockInfo = this.node.getChildByName("block");
+        this.smokeList = this.node.getChildByName("smoke");
+        this.imgPlate = this.node.getChildByName('img_plate')
+        this.fruitAwards = this.node.getChildByName("acitonView").getChildByName('fruitAwards')
+        this.initGame();
+    }
+
+
+    public openSeepShop(event): void {
+
+        if (event.currentTarget === this.buySeedBtn || event.currentTarget === this.buyBulldeBtn || event.currentTarget === this.blockInfo) {
+            App.ui.open(UIConstant.SeedShopView, this.node)
+        } else if (event.currentTarget === this.pigAttackBtn) {
+            App.ui.open(UIConstant.PigAttackView, this.node)
+        } else if (event.currentTarget === this.fruitRecordBtn) {
+            App.ui.open(UIConstant.FruitRecordView, this.node)
+        } else {
+
+            //  //  test
+            //     this.getResuleInfoMsg(5);
+            //     // this.seedLogsInfo();
+            //     return;
+            App.ui.open(UIConstant.FruitBagView, this.node)
+        }
+    }
+    // LIFE-CYCLE CALLBACKS:
+    private initGame() {
+        this.getFarmGameInfo();
+        this.getMyPlantInfo(1);
+        this.seedLogsInfo();
+    }
+
+    protected initFinish(): void {
+        AnimeManager.playSequenceAnime(this.carBtn, cc.v2(0, 0), "carStantPlist", {
+            speed: 0.7,
+            wrapMode: cc.WrapMode.Loop
+        })
+    }
+
+
+    private getFarmGameInfo() {
+        App.GameProxy.farmGameInfo({
+            onSuccess: this.gameInfo,
+            thisObj: this
+        })
+        clearInterval(this.timer);
+        this.timer = setInterval(this.getFarmGameInfo.bind(this), 1000)
+    }
+
+    private getMyPlantInfo(state: number) {
+        this.plantState = state;
+        App.GameProxy.MyPlant({
+            onSuccess: this.myPlantInfo,
+            thisObj: this
+        })
+    }
+
+    private seedLogsInfo() {
+        App.GameProxy.seedLogs({
+            onSuccess: function (data) {
+                console.log("data", data);
+                this.scrollContent.removeAllChildren();
+                this.scrollContent.parent.stopAllActions();
+                this.scrollContent.parent.setPosition(cc.v2(0, 28))
+                let length = data.length > 10 ? 10 : data.length;
+                for (let i = 0; i < length; i++) {
+                    let nData = data[i];
+                    let node = cc.instantiate(this.scrollItem);
+                    let head = node.getChildByName("mask").getChildByName("head").getComponent(cc.Sprite);
+                    node.parent = this.scrollContent;
+                    node.getChildByName("msg").getComponent(cc.Label).string = `${nData.Nick} 刚刚种下${nData.Name}`;
+                    RES.loadHead(nData.HeadImg, head);
+                    node.active = true;
+
+                    if (i == length - 1) {
+                        let self = this;
+                        let j = 1;
+                        let action = cc.sequence(cc.moveBy(1, 0, j * 56), cc.delayTime(2), cc.callFunc(function () {
+                            // console.log("j",j)
+                            if (j == length - 1) {
+                                j = 1;
+                                self.scrollContent.parent.setPosition(0, 28);
+                            } else {
+                                j++;
+                            }
+                        }.bind(this))).repeatForever();
+                        this.scrollContent.parent.runAction(action);
+                        console.log("开始滚动")
+                    }
+                }
+            },
+            thisObj: this
+        })
+    }
+
+    /**
+     * 我的种植计划
+     */
+    private myPlantInfo(data: Array<object>) {
+        console.log("我的种植计划", data);
+        this.plantedFruit = data
+        if (data.length == 0) {
+            for (let idx in this.blockList) {
+                this.blockList[idx].getComponent("Plant").stateInfo(1);
+            }
+            return
+        };
+        data.forEach((info: any, index) => {
+            switch (this.plantState) {
+                case 1:
+                    this.blockList[info.Nums].getComponent("Plant").stateInfo(3);
+                    break;
+                case 2:
+                    let state = this.blockList[info.Nums].getComponent("Plant").state;
+                    if (state == 1) {
+                        this.blockList[info.Nums].getComponent("Plant").stateInfo(2);
+                    }
+                    break;
+            }
+        })
+
+    }
+
+    private gameInfo(data) {
+        // console.log("游戏消息", data)
+        if (this.gameRid !== data.Gameinfo.Rid && this.gameRid) {
+            this.attackHint.string = `<color=#59812A>危险!野猪还有<color=#E01212>0秒</color>入侵!请抓紧时间种植</c>`
+            this.nextRid = data.Gameinfo.Rid
+            clearInterval(this.timer);
+            this.getResuleInfo(this.gameRid)
+            return
+        }
+        let toTime: string = ""
+        this.gameRid = data.Gameinfo.Rid
+        this.seedNums.string = data.Gameinfo.Instone;
+        this.progressBar.progress = data.Gameinfo.Process / 100;
+        this.orchardNumber.string = `第${data.Gameinfo.Period}号果园`;
+        if (data.Gameinfo.Countdown > 60) {
+            toTime = this.toDouble(Math.floor(data.Gameinfo.Countdown / 60)) + "分" + this.toDouble(data.Gameinfo.Countdown % 60) + "秒"
+        } else {
+            toTime = data.Gameinfo.Countdown + "秒";
+        }
+        this.attackHint.string = `<color=#59812A>危险!野猪还有<color=#E01212>${toTime}</color>入侵!请抓紧时间种植</c>`
+
+        EventDispatcher.dispatch(GameEvent.UPDATE_PROGRESS, data)
+    }
+    private toDouble(num: number) {
+        return num >= 10 ? num : "0" + num;
+    }
+
+
+    /**
+     * 开奖结果
+     */
+
+    private getResuleInfo(termid) {
+        App.GameProxy.getResult({
+            termid: termid,
+            onSuccess: this.getResuleInfoMsg,
+            thisObj: this
+        })
+    }
+
+    /**开奖结果返回 */
+    private async getResuleInfoMsg(data) {
+        console.log("data", data);
+        if (!data) {
+            await this.sleep(1000);
+            this.getResuleInfo(this.gameRid);
+            return;
+        } else {
+            this.gameRid = this.nextRid
+        }
+
+        //test
+        // let targetNum = 15;
+        let targetNum = data.Nums;
+
+        let callback = () => {
+            this.pigSpine.node.active = true;
+            this.pigSpine.setAnimation(0, "move", false);
+            this.pigSpine.setEventListener((trackIndex, event) => {
+                this.pigSpine.node.active = false;
+                let name = event.data.name;
+                if (name == "ending") {
+                    for (let idx in this.blockList) {
+                        let state = this.blockList[idx].getComponent("Plant").state;
+                        let id = this.blockList[idx].getComponent("Plant").id;
+                        if ((state == 2 || state == 3) && id != targetNum) {
+                            this.blockList[idx].getComponent("Plant").stateInfo(4);
+                        }
+                    }
+                    this.scheduleOnce(() => {
+                        App.ui.open(UIConstant.AllAlertView, null, {
+                            data: {
+                                showKey: "boarTip",
+                                data: data
+                            }
+                        })
+                    }, 1)
+                }
+            });
+        }
+        let smoke = this.smokeList.children;
+        this.smokeList.active = true;
+        smoke[0].getComponent(cc.Animation).play("smoke1");
+        smoke[1].getComponent(cc.Animation).play("smoke2");
+        smoke[1].getComponent(cc.Animation).on(cc.Animation.EventType.FINISHED, () => {
+            console.log("野猪出来");
+            this.smokeList.active = false;
+            callback()
+        });
+    }
+    /**
+     * 
+     * @param node 
+     * @param pos 
+     * @param callback 
+     */
+    private moveAction(node: cc.Node, startPos: cc.Vec2, endPos: cc.Vec2, callback?) {
+        // let bezier: cc.Vec2[] = [
+        //     cc.v2(startPos.x, startPos.y),
+        //     cc.v2((endPos.x + startPos.x) / 2 - 300, endPos.y + 300),
+        //     cc.v2(endPos.x, endPos.y)
+        // ];
+        let bezierAction = cc.moveTo(1, cc.v2(endPos.x, endPos.y));
+        let action = cc.sequence(cc.spawn(
+            bezierAction,
+            cc.scaleTo(0.8, 0.8)
+        ), cc.callFunc(() => {
+            this.fruitBagBtn.getComponent(cc.Animation).play('bag')
+            this.fruitAwards.active = false
+            // callback()
+        })).easing(cc.easeInOut(1));
+
+        node.runAction(action);
+    }
+    /* 买中回调 */
+    private getBuyIn(data) {
+        this.plantedFruit.some((item: any, index) => {
+            if (item.Nums === data.Nums) {
+                console.log('买中', this.blockList[data.Nums].convertToWorldSpaceAR(cc.Vec2.ZERO));
+                let fruitPosition = this.blockList[data.Nums].convertToWorldSpaceAR(cc.Vec2.ZERO)
+                let bagPosition = this.fruitBagBtn.convertToWorldSpaceAR(cc.Vec2.ZERO)
+                this.fruitAwards.setPosition(fruitPosition)
+                RES.setSpriteFrame(this.fruitAwards.getComponent(cc.Sprite), `common/fruit/img_fruit_${data.Nums}`)
+                this.fruitAwards.active = true
+                this.moveAction(this.fruitAwards, fruitPosition, bagPosition)
+                return true
+            }
+        })
+    }
+    /**
+     * 开始一场新游戏
+     */
+    private startNewGame() {
+        this.farmerSpine.node.active = true;
+        this.farmerSpine.setAnimation(0, "dig", false);
+        this.farmerSpine.setEventListener((trackIndex, event) => {
+            this.farmerSpine.node.active = false;
+            let name = event.data.name;
+            if (name == "ending") {
+                for (let idx in this.blockList) {
+                    this.blockList[idx].getComponent("Plant").stateInfo(1);
+                }
+                this.initGame();
+            }
+        });
+    }
+
+    private sleep(interval) {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, interval);
+        })
+    }
+
+    private goMainScene() {
+        clearInterval(this.timer);
+        SilentLoader.canLoad = false;
+        cc.director.loadScene("mainScene", function (e) {
+            console.log("e", e)
+            SilentLoader.canLoad = true;
+        });
+    }
+
+    private openAttcak() {
+        App.ui.open(UIConstant.PigAttackView)
+    }
+
+
+    /**
+ * 增加监听事件
+ */
+    protected initEvent(): void {
+        EventDispatcher.addListener(GameEvent.GET_BUY_IN, this.getBuyIn, this);
+        EventDispatcher.addListener(GameEvent.PLANT_END, this.getMyPlantInfo, this);
+        EventDispatcher.addListener(GameEvent.START_NEW_GAME, this.startNewGame, this);
+        EventDispatcher.addListener(GameEvent.GO_TO_MAINSCENE, this.goMainScene, this);
+        this.buyBulldeBtn.on(cc.Node.EventType.TOUCH_START, this.openSeepShop, this);
+        this.blockInfo.on(cc.Node.EventType.TOUCH_START, this.openSeepShop, this);
+        this.carBtn.on("click", this.goMainScene, this);
+        this.imgPlate.on("click", this.openAttcak, this)
+        this.btnOptions.children.forEach((item, index) => {
+            item.on(cc.Node.EventType.TOUCH_START, this.openSeepShop, this)
+        })
+    }
+    /** */
+    protected removeEvent(): void {
+        EventDispatcher.removeListener(GameEvent.GET_BUY_IN, this.getBuyIn, this);
+        EventDispatcher.removeListener(GameEvent.PLANT_END, this.getMyPlantInfo, this);
+        EventDispatcher.removeListener(GameEvent.START_NEW_GAME, this.startNewGame, this);
+        EventDispatcher.removeListener(GameEvent.GO_TO_MAINSCENE, this.goMainScene, this);
+        this.buyBulldeBtn.off(cc.Node.EventType.TOUCH_START, this.openSeepShop, this);
+        this.blockInfo.off(cc.Node.EventType.TOUCH_START, this.openSeepShop, this);
+        this.carBtn.off("click", this.goMainScene, this);
+        this.imgPlate.off("click", this.openAttcak, this)
+        this.btnOptions.children.forEach((item, index) => {
+            item.off(cc.Node.EventType.TOUCH_START, this.openSeepShop, this)
+        })
+    }
+
+
+
+}

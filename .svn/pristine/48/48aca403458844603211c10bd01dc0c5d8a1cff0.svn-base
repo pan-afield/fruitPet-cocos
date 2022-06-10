@@ -1,0 +1,20 @@
+
+wind.png
+size: 256,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+wind
+  rotate: true
+  xy: 2, 21
+  size: 86, 83
+  orig: 88, 85
+  offset: 1, 1
+  index: -1
+windmill_bottom
+  rotate: false
+  xy: 87, 2
+  size: 41, 105
+  orig: 42, 106
+  offset: 0, 1
+  index: -1

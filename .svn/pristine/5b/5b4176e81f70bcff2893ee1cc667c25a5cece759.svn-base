@@ -1,0 +1,82 @@
+// Learn TypeScript:
+//  - https://docs.cocos.com/creator/manual/en/scripting/typescript.html
+// Learn Attribute:
+//  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
+// Learn life-cycle callbacks:
+//  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
+
+import App from "../../manager/App";
+import RES from "../../res/RES";
+import BaseUI from "../BaseUI";
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class UserInfoView extends BaseUI {
+    private closeBtn: cc.Node = null;
+    private musicBtn: cc.Node = null;
+    private soundBtn: cc.Node = null;
+    private musicStatus: Boolean = false;
+    private soundStatus: Boolean = false;
+    private serviceBtn: cc.Node;
+
+    protected validateUI(): void {
+        this.closeBtn = this.node.getChildByName('popup_close')
+        this.musicBtn = this.node.getChildByName('music').getChildByName('botton')
+        this.soundBtn = this.node.getChildByName('sound').getChildByName('botton')
+        this.serviceBtn = this.node.getChildByName('bt_sure')
+    }
+    protected updateView(): void {
+        this.getUserInfo()
+    }
+    protected openMusic() {
+        let btnPoint = this.musicBtn.getChildByName('icon_point')
+        if (this.musicStatus) {
+            RES.setSpriteFrame(this.musicBtn.getComponent(cc.Sprite), 'view/userInfo/icon_close')
+            btnPoint.x = -17
+        } else {
+            RES.setSpriteFrame(this.musicBtn.getComponent(cc.Sprite), 'view/userInfo/icon_open')
+            btnPoint.x = 17
+        }
+        this.musicStatus = !this.musicStatus
+    }
+    protected openSound() {
+        let btnPoint = this.soundBtn.getChildByName('icon_point')
+        if (this.soundStatus) {
+            RES.setSpriteFrame(this.soundBtn.getComponent(cc.Sprite), 'view/userInfo/icon_close')
+            btnPoint.x = -17
+        } else {
+            RES.setSpriteFrame(this.soundBtn.getComponent(cc.Sprite), 'view/userInfo/icon_open')
+            btnPoint.x = 17
+        }
+        this.soundStatus = !this.soundStatus
+    }
+    protected getUserInfo() {
+        let onSuccess = (res) => {
+            console.log(res);
+            let pic = this.node.getChildByName('userPicMask').getChildByName('UserPic')
+            let name = this.node.getChildByName('UserName')
+            let id = this.node.getChildByName('UserID')
+            RES.loadHead(res.userinfo.headimg, pic.getComponent(cc.Sprite))
+            name.getComponent(cc.Label).string = '昵称： ' + res.userinfo.nick
+            id.getComponent(cc.Label).string = "ID： " + res.userinfo.UserId
+        }
+        App.UserProxy.getUserInfo({ onSuccess: onSuccess })
+    }
+    protected initEvent(): void {
+        this.serviceBtn.on('click',this.openService,this)
+        this.closeBtn.on('click', this.close, this)
+        this.musicBtn.on('click', this.openMusic, this)
+        this.soundBtn.on('click', this.openSound, this)
+    }
+    protected removeEvent(): void {
+        this.serviceBtn.off('click',this.openService,this)
+        this.closeBtn.off('click', this.close, this)
+        this.musicBtn.off('click', this.openMusic, this)
+        this.soundBtn.off('click', this.openSound, this)
+    }
+    private openService() {
+        // @ts-ignore
+        wx.openCustomerServiceConversation({})
+    }
+}

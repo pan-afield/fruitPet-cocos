@@ -1,0 +1,27 @@
+
+farmflower.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+butterfly
+  rotate: false
+  xy: 777, 171
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+light
+  rotate: true
+  xy: 2, 2
+  size: 301, 773
+  orig: 307, 775
+  offset: 1, 1
+  index: -1
+wind
+  rotate: true
+  xy: 777, 217
+  size: 86, 83
+  orig: 88, 85
+  offset: 1, 1
+  index: -1

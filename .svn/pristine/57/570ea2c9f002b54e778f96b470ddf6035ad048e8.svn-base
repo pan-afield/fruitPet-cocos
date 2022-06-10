@@ -1,0 +1,41 @@
+import BaseUI from "../BaseUI";
+
+const {ccclass, property} = cc._decorator;
+
+@ccclass
+export default class ToastTip extends BaseUI {
+
+    protected _data:{
+    };
+
+    protected validateUI():void
+    {
+    }
+
+    protected updateView():void
+    {
+
+    }
+
+    /**
+     * 添加监听事件
+     */
+    protected initEvent():void
+    {
+    }
+
+    /**
+     * 移除监听事件
+     */
+    protected removeEvent():void
+    {
+    }
+
+    onDisable(){
+        if(this.node.parent)
+        {
+            this.node.stopAllActions();
+            this.node.parent.removeChild(this.node, false);
+        }
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "groups": [
+        {
+            "keys": "toasttip_plist_plist,toasttip_plist_png",
+            "name": "toasttip"
+        }
+    ],
+    "resources": [
+        {
+            "name": "toasttip_plist_plist",
+            "type": "cc.SpriteAtlas",
+            "url": "AlertDialog/toasttip_plist"
+        },
+        {
+            "name": "toasttip_plist_png",
+            "type": "plistTexture",
+            "url": "AlertDialog/toasttip_plist.png"
+        }
+    ]
+}

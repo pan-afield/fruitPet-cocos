@@ -1,0 +1,201 @@
+import UIConstant from "../../constant/UIConstant";
+import EventDispatcher from "../../event/EventDispatcher";
+import GameEvent from "../../event/GameEvent";
+import App from "../../manager/App";
+import FramingManager from "../../manager/FramingManager";
+import MessageBoxManager from "../../manager/MessageBoxManager";
+import RES from "../../res/RES";
+import BaseUI from "../BaseUI";
+import AlertDialog from "../dialog/AlertDialog";
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class BuySeedView extends BaseUI {
+
+    private content: cc.Node;
+    private itemScroll: cc.Node;
+    private item: cc.Node;
+    private goodList: Array<Object> = [];
+    private closeBtn: cc.Node;
+    private gold: number = 0;
+    private seedText: cc.RichText;
+    private titleNum: cc.RichText;
+    private lotNum: number = 1; // 份额
+    private selectList: cc.Node[];
+    private expressId: number = 0;
+    private checkBtn: cc.Node;
+    private title: cc.Node;
+    private continueBuy;
+    /**
+   * 识别所有需要操作的节点或组件
+   */
+    protected validateUI(): void {
+        this.content = this.node.getChildByName("content");
+        this.itemScroll = this.content.getChildByName("scrollView").getChildByName("view").getChildByName("content");
+        this.item = this.content.getChildByName("item");
+        this.closeBtn = this.content.getChildByName("cancel");
+        this.seedText = this.content.getChildByName("seed").getComponent(cc.RichText);
+        this.titleNum = this.content.getChildByName("titleNum").getComponent(cc.RichText);
+        this.selectList = this.content.getChildByName("selectlist").children;
+        this.checkBtn = this.content.getChildByName("bt_suer");
+        this.title = this.content.getChildByName('title')
+    }
+
+    protected updateView(): void {
+        this.lotNum = 1;
+        this.gold = 0;
+        console.log(this.data.data);
+        this.goodList = this.data.data.selectFoodList;
+        this.expressId = this.data.data.num;
+        this.name = this.data.data.name
+        this.continueBuy = this.data.data.continueBuy
+
+        console.log("expressId", this.expressId)
+        if (this.expressId) {
+            this.titleNum.string = `请确认委托运送<color=#ED5B26>${App.gdata.farmGameInfo.Period}号</color>果园的种子清单:`
+            this.title.getComponent(cc.Label).string = this.name + '快递'
+        } else {
+            this.titleNum.string = `请确认您运送<color=#ED5B26>${App.gdata.farmGameInfo.Period}号</color>果园的种子清单:`
+            this.title.getComponent(cc.Label).string = '购买种子'
+        }
+        this.getViewInfo();
+    }
+
+    /**
+     * 添加监听事件
+     */
+    protected initEvent(): void {
+        this.closeBtn.on("click", this.closeCanel, this);
+        this.checkBtn.on("click", this.checkFun, this);
+        this.selectList.forEach((node: cc.Node, index) => {
+            node.on("click", this.addLotInfo, this);
+        })
+    }
+
+    /**
+     * 移除监听事件
+     */
+    protected removeEvent(): void {
+        this.closeBtn.off("click", this.closeCanel, this);
+        this.checkBtn.on("click", this.checkFun, this);
+        this.selectList.forEach((node: cc.Node, index) => {
+            node.off("click", this.addLotInfo, this);
+        })
+    }
+
+    private addLotInfo(evt: cc.Button) {
+        let node: cc.Node = evt.target || evt.node;
+        let name = node.name == "0.5" ? 0.5 : parseInt(node.name);
+        if (!name) return;
+        if (this.lotNum < 2 && name == 0.5) return;
+        this.lotNum = Math.ceil(this.lotNum * name);
+        console.log("lotNum", this.lotNum);
+        let nodeList: cc.Node[] = this.itemScroll.children;
+        this.gold = 0;
+        nodeList.forEach((node, index) => {
+            this.goodList[index]["rise"] = node["rise"] * this.lotNum;
+            let num = node.getChildByName("num").getComponent(cc.Label);
+            num.string = this.goodList[index]["rise"];
+            this.gold += this.goodList[index]["rise"];
+        })
+        this.seedText.string = `购买 <color=#ED5B26>${this.goodList.length}类</color>种子，需消耗<color=#ED5B26>${this.gold}金币</color>`;
+    }
+
+    private getViewInfo() {
+        if (this.goodList.length == 0) return;
+        console.log("goodList", this.goodList);
+        this.itemScroll.removeAllChildren();
+        FramingManager.updateRecordList(this.goodList, this.getSeedsInfoItem, this);
+    }
+    private getSeedsInfoItem(data, index) {
+        let node = cc.instantiate(this.item);
+        let icon = node.getChildByName("icon").getComponent(cc.Sprite);
+        let name = node.getChildByName("name").getComponent(cc.Label);
+        let num = node.getChildByName("num").getComponent(cc.Label);
+        node.active = true;
+        if (data.Nums !== undefined) {
+            RES.setSpriteFrame(icon, `common/fruit/img_fruit_${data.Nums}`);
+        } else {
+            RES.setSpriteFrame(icon, `common/fruit/img_fruit_${data.Num}`);
+        }
+        num.string = "1";
+        node["rise"] = 1;
+        // name.string = data.Name;
+        if (!this.expressId && !this.continueBuy) {
+            name.string = `${data.Num}-${data.Name}`;
+        } else {
+            name.string = data.Name
+        }
+        node.parent = this.itemScroll;
+        if (this.goodList.length - 1 == index) {
+            this.gold = this.goodList.length;
+            this.seedText.string = `购买 <color=#ED5B26>${this.goodList.length}类</color>种子，需消耗<color=#ED5B26>${this.gold}金币</color>`;
+        }
+    }
+    private closeCanel() {
+        this.close()
+        App.ui.open(UIConstant.SeedShopView)
+    }
+    private checkFun() {
+        let termid = App.gdata.farmGameInfo.Rid;
+        if (this.expressId) {
+            App.GameProxy.applyByExpress({
+                data: {
+                    termid: termid,
+                    expressid: this.expressId,
+                    amount: this.lotNum
+                },
+                onSuccess: function (data) {
+                    App.ui.open(UIConstant.AllAlertView, null, {
+                        data: {
+                            showKey: "buySeed",
+                            data: data
+                        }
+                    })
+                    this.close();
+
+                    console.log("data", data);
+                },
+                thisObj: this
+            })
+        } else {
+            let nums = "";
+            this.goodList.forEach((data: any, index) => {
+                if (data.Nums !== undefined) {
+                    if (index == this.goodList.length - 1) {
+                        nums = nums + data.Nums
+                    } else {
+                        nums = nums + data.Nums + ","
+                    }
+                } else {
+                    if (index == this.goodList.length - 1) {
+                        nums = nums + data.Num
+                    } else {
+                        nums = nums + data.Num + ","
+                    }
+                }
+            })
+            console.log(this.goodList, nums);
+
+            App.GameProxy.apply({
+                data: {
+                    termid: termid,
+                    nums: nums,
+                    amount: this.lotNum
+                },
+                onSuccess: function (data) {
+                    App.ui.open(UIConstant.AllAlertView, null, {
+                        data: {
+                            showKey: "buySeed",
+                            data: data
+                        }
+                    })
+                    this.close();
+                    console.log("data", data);
+                },
+                thisObj: this
+            })
+        }
+    }
+}

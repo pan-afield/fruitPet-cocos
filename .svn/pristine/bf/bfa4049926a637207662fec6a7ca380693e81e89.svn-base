@@ -1,0 +1,174 @@
+
+Blessing bag02.png
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Divergent
+  rotate: false
+  xy: 2, 289
+  size: 191, 188
+  orig: 200, 200
+  offset: 3, 5
+  index: -1
+Gift certificate03-1
+  rotate: true
+  xy: 590, 48
+  size: 100, 77
+  orig: 100, 108
+  offset: 0, 15
+  index: -1
+Gift certificate03-2
+  rotate: false
+  xy: 195, 386
+  size: 73, 91
+  orig: 100, 108
+  offset: 17, 8
+  index: -1
+Gift certificate03-3
+  rotate: false
+  xy: 195, 281
+  size: 57, 103
+  orig: 100, 108
+  offset: 23, 4
+  index: -1
+Gift certificate03-4
+  rotate: true
+  xy: 502, 55
+  size: 93, 86
+  orig: 100, 108
+  offset: 3, 9
+  index: -1
+Gift certificate03-5
+  rotate: false
+  xy: 754, 63
+  size: 81, 87
+  orig: 100, 108
+  offset: 10, 9
+  index: -1
+Gift certificate03-6
+  rotate: false
+  xy: 970, 908
+  size: 26, 107
+  orig: 100, 108
+  offset: 37, 1
+  index: -1
+Gift certificate03-7
+  rotate: false
+  xy: 669, 58
+  size: 83, 92
+  orig: 100, 108
+  offset: 10, 9
+  index: -1
+Gift01
+  rotate: false
+  xy: 194, 122
+  size: 212, 157
+  orig: 260, 173
+  offset: 21, 9
+  index: -1
+Gift02
+  rotate: true
+  xy: 568, 311
+  size: 210, 154
+  orig: 260, 173
+  offset: 21, 11
+  index: -1
+Gift03
+  rotate: false
+  xy: 408, 150
+  size: 213, 154
+  orig: 260, 173
+  offset: 21, 11
+  index: -1
+Gift04
+  rotate: true
+  xy: 272, 306
+  size: 240, 158
+  orig: 260, 173
+  offset: 6, 9
+  index: -1
+Gift05
+  rotate: false
+  xy: 623, 152
+  size: 205, 157
+  orig: 260, 173
+  offset: 24, 9
+  index: -1
+Open bag
+  rotate: false
+  xy: 272, 548
+  size: 200, 199
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+aperture01
+  rotate: false
+  xy: 2, 479
+  size: 268, 268
+  orig: 268, 268
+  offset: 0, 0
+  index: -1
+aperture02
+  rotate: false
+  xy: 750, 547
+  size: 156, 156
+  orig: 200, 200
+  offset: 22, 22
+  index: -1
+aperture03
+  rotate: true
+  xy: 580, 705
+  size: 310, 388
+  orig: 310, 388
+  offset: 0, 0
+  index: -1
+fangsheguang_0003
+  rotate: false
+  xy: 568, 523
+  size: 180, 180
+  orig: 186, 186
+  offset: 3, 3
+  index: -1
+fangsheguang_0004
+  rotate: false
+  xy: 2, 99
+  size: 190, 188
+  orig: 192, 190
+  offset: 0, 2
+  index: -1
+number01
+  rotate: false
+  xy: 2, 5
+  size: 378, 92
+  orig: 378, 92
+  offset: 0, 0
+  index: -1
+number02
+  rotate: true
+  xy: 474, 358
+  size: 389, 92
+  orig: 389, 92
+  offset: 0, 0
+  index: -1
+super
+  rotate: false
+  xy: 2, 749
+  size: 576, 266
+  orig: 675, 357
+  offset: 47, 44
+  index: -1
+wdgz-21
+  rotate: false
+  xy: 382, 2
+  size: 118, 118
+  orig: 122, 122
+  offset: 2, 2
+  index: -1
+yuboombowen
+  rotate: false
+  xy: 724, 344
+  size: 177, 177
+  orig: 186, 189
+  offset: 3, 6
+  index: -1

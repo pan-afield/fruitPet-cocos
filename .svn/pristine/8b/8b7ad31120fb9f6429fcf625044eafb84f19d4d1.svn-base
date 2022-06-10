@@ -1,0 +1,38 @@
+import App from "../../manager/App";
+import RES from "../../res/RES";
+import UIUtil from "../../util/UIUtil";
+import BaseUI from "../BaseUI";
+
+
+const { ccclass, property } = cc._decorator;
+@ccclass
+export default class DrawView extends BaseUI {
+    private backBtn: cc.Node
+    private coin: cc.Node
+    private gift: cc.Node
+    private startBtn:cc.Node
+
+    protected validateUI(): void {
+        // this.backBtn = this.node.getChildByName('backBtn')
+        this.startBtn = this.node.getChildByName('startBtn')
+        this.coin = this.node.getChildByName('gold').getChildByName('gold_text')
+        this.gift = this.node.getChildByName('gift').getChildByName('gift_text')
+    }
+    protected updateView(): void {
+
+    }
+    protected initFinish(): void {
+        const pic = this.node.getChildByName('user').getChildByName('mask').getChildByName('head')
+        const vipLv = this.node.getChildByName('user').getChildByName('vipLv')
+        RES.loadHead(App.gdata.userInfo.userinfo.headimg, pic.getComponent(cc.Sprite))
+        vipLv.getComponent(cc.Label).string = App.gdata.userInfo.vipLevelInfo.level
+        this.coin.getComponent(cc.Label).string = UIUtil.toStone(App.gdata.userInfo.coin)
+        this.gift.getComponent(cc.Label).string = UIUtil.toStone(App.gdata.userInfo.giftcoupon)
+    }
+    protected initEvent(): void {
+        this.startBtn.on('click',this.close,this)
+    }
+    protected removeEvent(): void {
+        this.startBtn.off('click',this.close,this)
+    }
+}

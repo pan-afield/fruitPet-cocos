@@ -1,0 +1,90 @@
+import Config from "../config/config";
+import EventDispatcher from "../event/EventDispatcher";
+import GameEvent from "../event/GameEvent";
+import HttpHelper from "../http/HttpHelper";
+import App from "../manager/App";
+import MessageBoxManager from "../manager/MessageBoxManager";
+import AlertDialog from "../view/dialog/AlertDialog";
+
+/**
+ * 主线剧情通信
+ */
+export default class GoodsProxy {
+    public constructor() {
+
+    }
+    public goodsList(para: {
+        onSuccess?: Function,
+        thisObj?: any,
+        onFail?: Function,
+        data?
+    }): void {
+        HttpHelper.request({
+            url: Config.linkURL + "/Goods/List",
+            data: para.data,
+            method: "GET",
+            success: function (data) {
+                if (!data) {
+                    return;
+                }
+                if (data.Result != 0) {
+                    MessageBoxManager.showAlert({
+                        type: AlertDialog.TYPE_2,
+                        msg: data.Msg
+                    });
+                    return;
+                }
+                if (para.onSuccess) {
+                    para.onSuccess.apply(para.thisObj, [data.Data]);
+                }
+            }.bind(this),
+            fail: function (data) {
+                if (para.onFail) {
+                    para.onFail.apply(para.thisObj);
+                } else {
+                    MessageBoxManager.showAlert({
+                        type: AlertDialog.TYPE_2,
+                        msg: data.message
+                    });
+                }
+            }.bind(this)
+        });
+    }
+    public userPay(para: {
+        onSuccess?: Function,
+        thisObj?: any,
+        onFail?: Function,
+        data?
+    }): void {
+        HttpHelper.request({
+            url: Config.linkURL + "/Goods/Apply",
+            data: para.data,
+            method: "POST",
+            success: function (data) {
+                if (!data) {
+                    return;
+                }
+                if (data.Result != 0 && data.Result !== -5) {
+                    MessageBoxManager.showAlert({
+                        type: AlertDialog.TYPE_2,
+                        msg: data.Msg
+                    });
+                    return;
+                }
+                if (para.onSuccess) {
+                    para.onSuccess.apply(para.thisObj, [data]);
+                }
+            }.bind(this),
+            fail: function (data) {
+                if (para.onFail) {
+                    para.onFail.apply(para.thisObj);
+                } else {
+                    MessageBoxManager.showAlert({
+                        type: AlertDialog.TYPE_2,
+                        msg: data.message
+                    });
+                }
+            }.bind(this)
+        });
+    }
+}

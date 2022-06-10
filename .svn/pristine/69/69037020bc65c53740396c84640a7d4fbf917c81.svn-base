@@ -1,0 +1,60 @@
+import App from "../../manager/App";
+import FramingManager from "../../manager/FramingManager";
+import RES from "../../res/RES";
+import BaseUI from "../BaseUI";
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class PigAttackView extends BaseUI {
+    protected viewContent: cc.Node = null
+    private closeBtn: cc.Node = null;
+    protected attackItem: cc.Node = null
+    protected scrollContent: cc.Node = null
+    protected attackText: cc.Node = null;
+    private historyList = []
+
+    protected validateUI(): void {
+        this.viewContent = this.node.getChildByName('viewContent')
+        this.closeBtn = this.viewContent.getChildByName('popup_close')
+        this.attackItem = this.viewContent.getChildByName('attackItem')
+        this.scrollContent = this.viewContent.getChildByName('scrollview').getChildByName('view').getChildByName('content')
+        this.attackText = this.attackItem.getChildByName('attackText')
+    }
+    protected initEvent(): void {
+        this.closeBtn.on('click', this.close, this)
+    }
+    protected removeEvent(): void {
+        this.closeBtn.off('click', this.close, this)
+    }
+    protected updateView(): void {
+        this.gameHistory()
+    }
+    private gameHistory() {
+        let onSuccess = (res) => {
+            this.historyList = res.list.filter((item) => {
+                return item.GameEnd
+            })
+            this.scrollContent.removeAllChildren()
+            FramingManager.updateRecordList(this.historyList, this.getItem, this)
+        }
+        App.GameProxy.GameHistory({ onSuccess: onSuccess, data: { page: 1, pagesize: 30 } })
+    }
+    private getItem(item) {
+        let attackItemCopy = cc.instantiate(this.attackItem)
+        attackItemCopy.active = true
+        if (item.Period % 3 === 0) {
+            attackItemCopy.getChildByName('attackText').getComponent(cc.RichText).string = `<color=#A3894C>野猪袭击了<color=#FF7C55>${item.Period}号</color>果园,大家齐心抵抗,<color=#FF7C55><b>${item.Name}(生命:${item.Odds})</b></color>幸免于难。</c>`
+        } else if (item.Period % 3 === 1) {
+            attackItemCopy.getChildByName('attackText').getComponent(cc.RichText).string = `<color=#A3894C>野猪袭击了<color=#FF7C55>${item.Period}号</color>果园,由于不符合口味,<color=#FF7C55><b>${item.Name}(生命:${item.Odds})</b></color>成功存活。</c>`
+        } else {
+            attackItemCopy.getChildByName('attackText').getComponent(cc.RichText).string = `<color=#A3894C>野猪袭击了<color=#FF7C55>${item.Period}号</color>果园,守护喵出战,保卫了<b><color=#FF7C55>${item.Name}(生命:${item.Odds})</b></color>。</c>`
+        }
+        if (item.Stoneout !== 0) {
+            attackItemCopy.getChildByName('img_wildpig').active = false
+            attackItemCopy.getChildByName('success_fruit').active = true
+            RES.setSpriteFrame(attackItemCopy.getChildByName('success_fruit').getChildByName('fruitPic').getComponent(cc.Sprite), `common/fruit/img_fruit_${item.Nums}`)
+        }
+        this.scrollContent.addChild(attackItemCopy)
+    }
+}

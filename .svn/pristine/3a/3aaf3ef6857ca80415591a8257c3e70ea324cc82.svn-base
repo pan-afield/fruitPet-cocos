@@ -1,0 +1,55 @@
+
+pig_01.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+moke01
+  rotate: false
+  xy: 397, 78
+  size: 467, 304
+  orig: 475, 329
+  offset: 7, 4
+  index: -1
+moke02
+  rotate: false
+  xy: 1, 53
+  size: 395, 329
+  orig: 400, 332
+  offset: 3, 1
+  index: -1
+moke03
+  rotate: false
+  xy: 492, 27
+  size: 102, 50
+  orig: 118, 67
+  offset: 6, 9
+  index: -1
+moke04
+  rotate: false
+  xy: 397, 1
+  size: 94, 76
+  orig: 126, 100
+  offset: 16, 18
+  index: -1
+pig01
+  rotate: true
+  xy: 865, 64
+  size: 165, 140
+  orig: 165, 140
+  offset: 0, 0
+  index: -1
+pig02
+  rotate: false
+  xy: 865, 230
+  size: 151, 152
+  orig: 163, 156
+  offset: 3, 4
+  index: -1
+pig_shadow
+  rotate: false
+  xy: 595, 38
+  size: 203, 39
+  orig: 203, 40
+  offset: 0, 1
+  index: -1

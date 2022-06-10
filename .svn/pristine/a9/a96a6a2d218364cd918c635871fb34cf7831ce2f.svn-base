@@ -1,0 +1,41 @@
+// Learn TypeScript:
+//  - https://docs.cocos.com/creator/manual/en/scripting/typescript.html
+// Learn Attribute:
+//  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
+// Learn life-cycle callbacks:
+//  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
+
+import UIConstant from "../../constant/UIConstant";
+import App from "../../manager/App";
+import RES from "../../res/RES";
+import BaseUI from "../BaseUI";
+
+const { ccclass, property } = cc._decorator;
+
+@ccclass
+export default class NewPeopleView extends BaseUI {
+    private closeBtn: cc.Node;
+    private checkBtn: cc.Node;
+
+    protected validateUI(): void {
+        this.closeBtn = this.node.getChildByName('icon_close')
+        this.checkBtn = this.node.getChildByName('btn_check')
+    }
+    protected updateView(): void {
+
+    }
+
+    protected toStrategy() {
+        this.close()
+        App.ui.open(UIConstant.StrategyView)
+    }
+    protected initEvent(): void {
+        this.closeBtn.on('click', this.close, this)
+        this.checkBtn.on('click', this.toStrategy, this)
+    }
+    protected removeEvent(): void {
+        this.closeBtn.off('click', this.close, this)
+        this.checkBtn.off('click', this.toStrategy, this)
+    }
+
+}
